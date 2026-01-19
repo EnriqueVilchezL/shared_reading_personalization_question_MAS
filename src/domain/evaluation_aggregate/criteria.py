@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -8,4 +10,4 @@ class Criteria(BaseModel):
 
     type: str = Field(..., description="The type of the criteria.")
     description: str = Field(..., description="Description of the criteria.")
-    indicators: list[str] = Field(..., description="Indicators of the criteria.")
+    indicators: Optional[list[str]] = Field(..., description="Indicators of the criteria.")

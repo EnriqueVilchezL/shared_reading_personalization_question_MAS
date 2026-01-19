@@ -30,12 +30,16 @@ class Organization(ABC):
     Configuration for the organization.
     """
 
+    _agents_config: dict
+
     def __init__(self, name: str, information_schema: type[Information] = Information):
         self.name = name
         self.agents = []
         self.information_schema = information_schema
         self._core_graph = StateGraph(state_schema=information_schema)
         self.configuration = {}
+        self.set_agents_configuration({})
+
 
     def set_agents_configuration(self, data: dict):
         """
@@ -57,6 +61,8 @@ class Organization(ABC):
 
         if agent.name in self._agents_config:
             agent.configure(self._agents_config[agent.name])
+        else:
+            agent.configure({})
 
         self.agents.append(agent)
         self._core_graph.add_node(agent.name, agent.instanciate())
