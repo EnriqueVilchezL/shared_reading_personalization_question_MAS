@@ -52,9 +52,6 @@ class Agent(ABC):
     ):
         """
         Initializes the agent with the given roles.
-
-        Args:
-            roles (list[Role]): List of roles assigned to the agent.
         """
         self.name = name
         self.roles = (
@@ -77,14 +74,14 @@ class Agent(ABC):
         """
         self.organization = organization
 
-    def configure(self, data: dict):
+    def set_role_variables(self, data: dict):
         """
-        Configures the agent with the given data.
+        Sets the role variables for the agent with the given data.
 
         Args:
-            data (dict): The data to configure the agent with.
+            data (dict): The data to set to the agent.
         """
-        self.instructions = self.roles.configure(data)
+        self.instructions = self.roles.set_variables(data)
 
     def pre_core(self, data: dict) -> dict:
         """
@@ -96,7 +93,7 @@ class Agent(ABC):
         Returns:
             dict: The prepared information data.
         """
-        return data
+        return {}
 
     def apply_permissions(self, data: dict) -> dict:
         """
@@ -109,7 +106,7 @@ class Agent(ABC):
             dict: The information data with permissions applied.
         """
         data = self.roles.apply_permissions(data.copy())
-        return data
+        return {"messages": data.get("messages", [])}
 
     def post_core(self, data: dict) -> dict:
         """
@@ -126,7 +123,7 @@ class Agent(ABC):
         if messages and isinstance(messages[-1], AIMessage):
             messages[-1].name = self.name
 
-        return data
+        return {}
 
     def core(self) -> CompiledStateGraph:
         """

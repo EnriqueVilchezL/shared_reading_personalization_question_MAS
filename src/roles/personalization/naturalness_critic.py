@@ -2,12 +2,12 @@ from domain.evaluation_aggregate.criteria import Criteria
 from roles.personalization.critic import ConsultantCriticRole, DeepReviewCriticRole
 
 CRITERIA = Criteria(
-    type="la naturalidad",
-    description="Los nombres, lugares o elementos personalizados se insertan fluidamente, sin parecer añadidos forzados.",
+    type="naturalness",
+    description="Personalized names, places, or elements are integrated smoothly, without feeling like forced additions.",
     indicators=[
-        "Los personajes personalizados cumplen un rol funcional.",
-        "Las modificaciones respetan la lógica del universo narrativo.",
-        "No hay inserciones artificiosas."
+        "Personalized characters fulfill a functional role.",
+        "The modifications respect the logic of the narrative universe.",
+        "There are no artificial insertions.",
     ]
 )
 

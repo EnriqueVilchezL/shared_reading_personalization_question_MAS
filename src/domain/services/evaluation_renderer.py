@@ -10,10 +10,11 @@ class EvaluationMarkdownRenderer:
     def __init__(self):
         pass
 
-    def render(self, evaluation: Evaluation) -> str:
+    def render(self, evaluation: Evaluation, description: bool = False) -> str:
         """Orchestrates the rendering of the entire evaluation."""
         md_output = f"**Criterio**: {evaluation.criteria.type}\n\n"
-        md_output += f"- Descripción de criterio: {evaluation.criteria.description}\n"
+        if description:
+            md_output += f"- Descripción de criterio: {evaluation.criteria.description}\n"
         md_output += f"- Etiqueta: {evaluation.label}\n"
 
         if evaluation.changes or evaluation.changes != "":

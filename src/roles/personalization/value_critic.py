@@ -2,11 +2,11 @@ from domain.evaluation_aggregate.criteria import Criteria
 from roles.personalization.critic import ConsultantCriticRole, DeepReviewCriticRole
 
 CRITERIA = Criteria(
-    type="el valor narrativo añadido",
-    description="Que la personalización no sea solo cosmética, sino que enriquezca la historia o fortalezca la conexión con el lector infantil.",
+    type="added narrative value",
+    description="That the personalization is not merely cosmetic, but enriches the story or strengthens the connection with the child reader.",
     indicators=[
-        "Personalizaciones significativas para el lector.",
-        "Mejora de la inmersión o identificación emocional.",
+        "Personalizations that are meaningful to the reader.",
+        "Improved immersion or emotional identification.",
     ]
 )
 

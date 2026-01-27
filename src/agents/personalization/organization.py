@@ -3,15 +3,13 @@ from typing import override
 
 from langgraph.graph.state import END
 
+from agents.core.base_lm_config import LMConfiguration
 from agents.langfuse_organization import LangFuseOrganization
 from agents.personalization.information import Information
 from agents.personalization.personalizer import PersonalizerAgent
 from agents.personalization.triage_critic import TriageCriticAgent
 
-NO_ACEPTABLE_RE = re.compile(
-    r"\bno\s+aceptable\b",
-    re.IGNORECASE
-)
+NO_ACEPTABLE_RE = re.compile(r"\b\s+cambio\b", re.IGNORECASE)
 
 
 class Organization(LangFuseOrganization):
@@ -19,10 +17,17 @@ class Organization(LangFuseOrganization):
     Organization focused on shared reading activities.
     """
 
-    def __init__(self):
+    def __init__(self, configuration: dict = {}):
+        """
+        Initializes the personalization organization.
+
+        Args:
+            configuration (dict): Configuration for the organization.
+        """
         super().__init__(
             name="personalization_organization",
             information_schema=Information,
+            configuration=configuration,
         )
 
     def route_by_evaluation(self, state: Information) -> str:
@@ -41,14 +46,20 @@ class Organization(LangFuseOrganization):
 
     @override
     def instantiate(self):
-        self.add_agent(PersonalizerAgent())
-        self.add_agent(TriageCriticAgent())
+        agents_config = self.configuration["agents"]
+        self.add_agent(
+            PersonalizerAgent(
+                LMConfiguration.model_validate(agents_config["personalizer"])
+            )
+        )
+        self.add_agent(
+            TriageCriticAgent(
+                LMConfiguration.model_validate(agents_config["triage_critic"])
+            )
+        )
 
         # Base flow
-        self._core_graph.add_edge(
-            "personalizer",
-            "triage_critic",
-        )
+        self._core_graph.add_edge("personalizer", "triage_critic")
 
         # Conditional routing AFTER evaluation
         self._core_graph.add_conditional_edges(

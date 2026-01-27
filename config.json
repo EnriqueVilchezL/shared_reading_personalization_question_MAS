@@ -1,0 +1,98 @@
+{
+    "organizations": {
+        "personalization": {
+            "agents":
+            {
+                "personalizer": {
+                    "base_provider": "ollama",
+                    "base_model": "gemma3:4b",
+                    "temperature": 1,
+                    "reasoning": false
+                },
+                "triage_critic": {
+                    "base_provider": "ollama",
+                    "base_model": "llama3.1:8b",
+                    "temperature": 1,
+                    "reasoning": false
+                },
+                "coherence_critic": {
+                    "base_provider": "ollama",
+                    "base_model": "qwen3:8b",
+                    "temperature": 1,
+                    "reasoning": true
+                },
+                "emotion_critic": {
+                    "base_provider": "ollama",
+                    "base_model": "qwen3:8b",
+                    "temperature": 1,
+                    "reasoning": true
+                },
+                "moral_critic": {
+                    "base_provider": "ollama",
+                    "base_model": "qwen3:8b",
+                    "temperature": 1,
+                    "reasoning": true
+                },
+                "naturalness_critic": {
+                    "base_provider": "ollama",
+                    "base_model": "qwen3:8b",
+                    "temperature": 1,
+                    "reasoning": true
+                },
+                "style_critic": {
+                    "base_provider": "ollama",
+                    "base_model": "qwen3:8b",
+                    "temperature": 1,
+                    "reasoning": true
+                },
+                "value_critic": {
+                    "base_provider": "ollama",
+                    "base_model": "qwen3:8b",
+                    "temperature": 1,
+                    "reasoning": true
+                }
+            }
+        },
+        "questions": {
+            "agents":
+            {
+                "completion_questioner": {
+                    "base_provider": "ollama",
+                    "base_model": "gemma3:4b",
+                    "temperature": 1,
+                    "reasoning": false
+                },
+                "distancing_questioner": {
+                    "base_provider": "ollama",
+                    "base_model": "gemma3:4b",
+                    "temperature": 1,
+                    "reasoning": false
+                },
+                "open_ended_questioner": {
+                    "base_provider": "ollama",
+                    "base_model": "gemma3:4b",
+                    "temperature": 1,
+                    "reasoning": false
+                },
+                "recall_questioner": {
+                    "base_provider": "ollama",
+                    "base_model": "gemma3:4b",
+                    "temperature": 1,
+                    "reasoning": false
+                },
+                "wh_questioner": {
+                    "base_provider": "ollama",
+                    "base_model": "gemma3:4b",
+                    "temperature": 1,
+                    "reasoning": false
+                },
+                "aggregator": {
+                    "base_provider": "ollama",
+                    "base_model": "qwen3:8b",
+                    "temperature": 1,
+                    "reasoning": true
+                }
+            }
+        }
+    }
+}

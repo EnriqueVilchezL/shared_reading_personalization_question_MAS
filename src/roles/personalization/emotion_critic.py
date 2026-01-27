@@ -2,11 +2,11 @@ from domain.evaluation_aggregate.criteria import Criteria
 from roles.personalization.critic import ConsultantCriticRole, DeepReviewCriticRole
 
 CRITERIA = Criteria(
-    type="el impacto emocional",
-    description="Que el cuento personalizado logre emocionar, divertir y mantener el interés del lector infantil.",
+    type="emotional impact",
+    description="That the personalized story manages to move, entertain, and maintain the interest of the child reader.",
     indicators=[
-        "El cuento generaría reacciones positivas (risa, sorpresa, atención).",
-        "El cuento generaría un deseo por releerlo o compartirlo.",
+        "The story would generate positive reactions (laughter, surprise, attention).",
+        "The story would generate a desire to reread it or share it.",
     ]
 )
 

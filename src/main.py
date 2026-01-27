@@ -1,55 +1,156 @@
+from argparse import ArgumentParser
+
 from dotenv import load_dotenv
 
-from agents.personalization.organization import Organization
+from agents.personalization.organization import (
+    Organization as PersonalizationOrganization,
+)
+from agents.questions.organization import Organization as QuestionsOrganization
+from domain.book_aggregate.book import Book
 from domain.preference_aggregate.preference import Preference
 from domain.services.book_parser import BookParser
+from domain.services.book_renderer import BookMarkdownRenderer
+from domain.services.preference_parser import PreferenceParser
 from domain.services.preference_renderer import PreferenceMarkdownRenderer
+from utils import load_json_file, load_md_file, write_to_md_file
 
 load_dotenv()
 
-organization = Organization()
-preferences = [
-    Preference(type="Animal", preference="Gato"),
-    Preference(type="Animal", preference="Conejo"),
-    Preference(type="Color", preference="Azul"),
-    Preference(type="Color", preference="Verde"),
-    Preference(type="Juego", preference="Pelota"),
-    Preference(type="Juego", preference="Rompecabezas"),
-]
-book_str = """
-# El zorro de fuego
----
-Érase una vez un joven y fuerte agricultor que una noche volvía tarde del mercado. Su camino le llevó junto a los jardines de un rico caballero, en los que se alzaban varios edificios altos. De repente vio algo brillante flotando en el aire dentro de los jardines, algo que brillaba como una bola de cristal. Asombrado, escaló el muro que rodeaba los jardines, pero no había ningún ser humano a la vista; todo lo que vio fue, a lo lejos, algo que parecía ser un perro, mirando a la luna. Y cada vez que exhalaba el aliento, una bola de fuego salía de su boca y se elevaba hacia la luna. Y cuando inspiraba, la bola se hundía de nuevo y la atrapaba entre sus fauces. Y así siguió sin parar.
----
-Entonces el granjero se dio cuenta de que era un zorro, que estaba preparando el elixir de la vida. Se escondió entre la hierba y esperó a que la bola de fuego volviera a bajar, a la altura de su propia cabeza. Entonces salió apresuradamente de su escondite, se la llevó y se la tragó de inmediato. La sintió brillar mientras bajaba por su garganta hasta el estómago. Cuando el zorro vio lo que había ocurrido, se enfureció. Miró furioso al granjero, pero temía su fuerza. Por eso no se atrevió a atacarle, sino que siguió furioso su camino.
----
-A partir de entonces, el campesino podía hacerse invisible, ver fantasmas y demonios y relacionarse con el mundo de los espíritus. En caso de enfermedad, cuando la gente yacía inconsciente, podía llamar a sus almas, y si alguien había cometido un pecado, podía abogar por ellos. Gracias a estos dones ganaba mucho dinero.
----
-Cuando llegó a los cincuenta años, se retiró de todo y ya no quiso ejercer sus artes. Una noche de verano estaba sentado en su patio, disfrutando del aire fresco. Bebió varias copas de vino y a medianoche se quedó profundamente dormido. De repente se despertó, sintiéndose mal. Parecía como si alguien le diera una palmada en la espalda y, antes de que se diera cuenta, la bola de fuego había saltado de su garganta.
----
-En seguida una mano lo alcanzó y una voz dijo: "Durante treinta largos años me ocultaste mi tesoro, y de pobre campesino has pasado a ser un hombre rico. Ahora ya tienes bastante, y me gustaría volver a tener mi bola de fuego". Entonces el hombre supo lo que había pasado, pero el zorro se había ido.
 
-"""
+def run_personalization_pipeline(
+    story: Book, preferences: list[Preference], configuration: dict = {}, verbose: bool = False
+) -> Book:
+    """
+    Runs the personalization pipeline on a given story with user preferences.
 
-book = BookParser().parse(book_str)
+    Args:
+        story (Book): The original story to be personalized.
+        preferences (list[Preference]): The user reading preferences.
+        configuration (dict): Configuration for the organization.
+        verbose (bool): If True, prints detailed output during the process.
 
-organization.set_agents_configuration(
-    {
-        "personalizer": {
-            "preferences": PreferenceMarkdownRenderer().render(preferences)
-        },
-        "triage_critic": {
-            "preferences": PreferenceMarkdownRenderer().render(preferences)
-        },
-    }
-)
+    Returns:
+        Book: The personalized version of the story.
+    """
+    organization = PersonalizationOrganization(configuration=configuration)
 
-graph = organization.instantiate()
+    organization.set_agents_variables(
+        {
+            "personalizer": {
+                "preferences": PreferenceMarkdownRenderer().render(preferences)
+            },
+            "triage_critic": {
+                "preferences": PreferenceMarkdownRenderer().render(preferences)
+            },
+        }
+    )
 
-for step in graph.stream(
-    input={"original_book": book, "preferences": preferences},
-    config=organization.configuration,
-):
-    for update in step.values():
-        for message in update.get("messages", []):
-            message.pretty_print()
+    graph = organization.instantiate()
+
+    final_state = {}
+
+    for step in graph.stream(
+        input={"original_book": story, "preferences": preferences},
+        config=organization.configuration,
+    ):
+        for update in step.values():
+            final_state.update(update)
+            if verbose:
+                for message in update.get("messages", []):
+                    message.pretty_print()
+
+    return final_state["modified_book"]
+
+def run_questions_pipeline(story: Book, configuration: dict = {}, verbose: bool = False) -> Book:
+    """
+    Runs the question generation pipeline on a given story.
+
+    Args:
+        story (Book): The story for which to generate questions.
+        configuration (dict): Configuration for the organization.
+        verbose (bool): If True, prints detailed output during the process.
+
+    Returns:
+        Book: The story with generated questions.
+    """
+    organization = QuestionsOrganization(configuration=configuration)
+
+    graph = organization.instantiate()
+
+    final_state = {}
+
+    for step in graph.stream(
+        input={"original_book": story},
+        config=organization.configuration,
+    ):
+        for update in step.values():
+            final_state.update(update)
+            if verbose:
+                for message in update.get("messages", []):
+                    message.pretty_print()
+
+    return final_state["modified_book"]
+
+
+def run_pipelines(
+    story: Book, preferences: list[Preference], pipeline: str, configuration: dict = {},verbose: bool = False
+) -> Book:
+    """
+    Runs the specified pipelines on a given story with user preferences.
+
+    Args:
+        story (Book): The original story to be processed.
+        preferences (list[Preference]): The user reading preferences.
+        pipeline (str): The pipeline to run. It can be "ALL", "PERSONALIZATION", or "QUESTIONS".
+        configuration (dict): Configuration for the organizations.
+        verbose (bool): If True, prints detailed output during the process.
+
+    Returns:
+        Book: The processed version of the story.
+    """
+    if pipeline == "ALL":
+        story = run_personalization_pipeline(story, preferences, configuration["organizations"]["personalization"], verbose)
+        story = run_questions_pipeline(story, configuration["organizations"]["questions"], verbose)
+    elif pipeline == "PERSONALIZATION":
+        story = run_personalization_pipeline(story, preferences, configuration["organizations"]["personalization"], verbose)
+    elif pipeline == "QUESTIONS":
+        story = run_questions_pipeline(story, configuration["organizations"]["questions"], verbose)
+    return story
+
+
+def main():
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--story_path", help="The path to the MD file with the story", required=True
+    )
+    parser.add_argument(
+        "--preferences_path",
+        help="The path to the MD file with the preferences",
+        required=True,
+    )
+    parser.add_argument("--output_path", help="The output path", default="output.md")
+    parser.add_argument(
+        "--pipelines",
+        help="The pipelines to run",
+        choices=["ALL", "PERSONALIZATION", "QUESTIONS"],
+        default="ALL",
+        type=str.upper,
+    )
+    parser.add_argument(
+        "--verbose", action="store_true", help="Enable verbose output", default=False
+    )
+
+    args = parser.parse_args()
+
+    story_str = load_md_file(args.story_path)
+    preferences_str = load_md_file(args.preferences_path)
+    configuration = load_json_file("config.json")
+
+    story = BookParser().parse(story_str)
+    preferences = PreferenceParser().parse(preferences_str)
+
+    modified_story = run_pipelines(story, preferences, args.pipelines, configuration, args.verbose)
+
+    write_to_md_file(args.output_path, BookMarkdownRenderer().render(modified_story))
+
+main()

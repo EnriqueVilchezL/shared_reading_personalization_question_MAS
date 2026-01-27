@@ -3,21 +3,16 @@ from typing import Annotated, Required
 
 from agents.core.base_information import Information as BaseInformation
 from domain.book_aggregate.book import Book
-from domain.preference_aggregate.preference import Preference
+from utils import preserve_last
 
 
 class Information(BaseInformation):
-    preferences: list[Preference]
-    """
-    User reading preferences.
-    """
-
-    original_book: Book
+    original_book: Annotated[Book, preserve_last]
     """
     Original book to be shared.
     """
 
-    modified_book: Book
+    modified_book: Annotated[Book, preserve_last]
     """
     Book with integrated questions.
     """
@@ -26,6 +21,5 @@ class Information(BaseInformation):
     """
     Books with questions created about the original book.
     """
-
 
 

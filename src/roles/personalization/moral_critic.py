@@ -2,12 +2,12 @@ from domain.evaluation_aggregate.criteria import Criteria
 from roles.personalization.critic import ConsultantCriticRole, DeepReviewCriticRole
 
 CRITERIA = Criteria(
-    type="la enseñanza",
-    description="Que la personalización no contradiga la enseñanza, valor o moraleja del cuento original.",
+    type="the moral",
+    description="That the personalization does not contradict the lesson, value, or moral of the original story.",
     indicators=[
-        "El mensaje central permanece intacto.",
-        "El desenlace conserva el sentido ético o simbólico.",
-        "No se tergiversa la lógica de los personajes ni la intención."
+        "The central message remains intact.",
+        "The ending preserves its ethical or symbolic meaning.",
+        "The logic of the characters or the original intent is not distorted.",
     ]
 )
 

@@ -12,12 +12,15 @@ class CoherenceCriticAgent(CriticAgent):
     Agent that evaluates personalization responses based on user preferences.
     """
 
-    def __init__(self):
+    def __init__(
+        self,
+        lm_config: LMConfiguration | None = None,
+    ):
         super().__init__(
             name="coherence_critic",
             roles=RoleCollection(
                 [CoherenceDeepReviewCriticRole(), CoherenceConsultantCriticRole()],
                 mode=RoleMode.OR,
             ),
-            lm_config=LMConfiguration(base_model="qwen3:8b", reasoning=True),
+            lm_config=lm_config,
         )

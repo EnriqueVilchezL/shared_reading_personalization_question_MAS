@@ -1,8 +1,16 @@
 from typing import override
 
+from langgraph.graph import START
+
+from agents.core.base_lm_config import LMConfiguration
 from agents.langfuse_organization import LangFuseOrganization
-from agents.questions.completition_questioner import CompletitionQuestionerAgent
+from agents.questions.aggregator import AggregatorAgent
+from agents.questions.completion_questioner import CompletionQuestionerAgent
+from agents.questions.distancing_questioner import DistancingQuestionerAgent
 from agents.questions.information import Information
+from agents.questions.open_ended_questioner import OpenEndedQuestionerAgent
+from agents.questions.recall_questioner import RecallQuestionerAgent
+from agents.questions.wh_questioner import WhQuestionerAgent
 
 
 class Organization(LangFuseOrganization):
@@ -10,18 +18,75 @@ class Organization(LangFuseOrganization):
     Organization focused on shared reading activities.
     """
 
-    def __init__(self):
+    def __init__(self, configuration: dict = {}):
+        """
+        Initializes the personalization organization.
+
+        Args:
+            configuration (dict): Configuration for the organization.
+        """
         super().__init__(
-            name="personalization_organization",
+            name="questions_organization",
             information_schema=Information,
+            configuration=configuration,
         )
 
     @override
     def instantiate(self):
-        self.add_agent(CompletitionQuestionerAgent())
+        agents_config = self.configuration["agents"]
+        self.add_agent(
+            CompletionQuestionerAgent(
+                LMConfiguration.model_validate(
+                    agents_config["completition_questioner"]
+                )
+            )
+        )
+        self.add_agent(
+            RecallQuestionerAgent(
+                LMConfiguration.model_validate(
+                    agents_config["recall_questioner"]
+                )
+            )
+        )
+        self.add_agent(
+            OpenEndedQuestionerAgent(
+                LMConfiguration.model_validate(
+                    agents_config["open_ended_questioner"]
+                )
+            )
+        )
+        self.add_agent(
+            WhQuestionerAgent(
+                LMConfiguration.model_validate(
+                    agents_config["wh_questioner"]
+                )
+            )
+        )
+        self.add_agent(
+            DistancingQuestionerAgent(
+                LMConfiguration.model_validate(
+                    agents_config["distancing_questioner"]
+                )
+            )
+        )
+        self.add_agent(
+            AggregatorAgent(
+                LMConfiguration.model_validate(
+                    agents_config["aggregator"]
+                )
+            )
+        )
 
         # Entry point
-        self._core_graph.set_entry_point("completition_questioner")
-        self._core_graph.set_finish_point("completition_questioner")
+        self._core_graph.add_edge(START, "completition_questioner")
+        self._core_graph.add_edge(START, "recall_questioner")
+        self._core_graph.add_edge(START, "open_ended_questioner")
+        self._core_graph.add_edge(START, "wh_questioner")
+        self._core_graph.add_edge(START, "distancing_questioner")
+        self._core_graph.add_edge("completition_questioner", "aggregator")
+        self._core_graph.add_edge("recall_questioner", "aggregator")
+        self._core_graph.add_edge("open_ended_questioner", "aggregator")
+        self._core_graph.add_edge("wh_questioner", "aggregator")
+        self._core_graph.add_edge("distancing_questioner", "aggregator")
 
         return self._core_graph.compile()

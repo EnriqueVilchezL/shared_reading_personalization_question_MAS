@@ -32,7 +32,6 @@ class BookMarkdownRenderer:
             md_output.append("---")
             md_output.append(self._render_page(page))
 
-        md_output.append("---")
         return "\n".join(md_output)
 
     def _render_page(self, page: Page) -> str:

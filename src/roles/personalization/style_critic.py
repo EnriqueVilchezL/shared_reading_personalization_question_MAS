@@ -2,12 +2,12 @@ from domain.evaluation_aggregate.criteria import Criteria
 from roles.personalization.critic import ConsultantCriticRole, DeepReviewCriticRole
 
 CRITERIA = Criteria(
-    type="el estilo",
-    description="Que la personalización no altere la voz narrativa, el nivel del lenguaje ni el estilo literario del cuento.",
+    type="style",
+    description="That the personalization does not alter the narrative voice, language level, or literary style of the story.",
     indicators=[
-        "Consistencia en el registro lingüístico.",
-        "Uso adecuado del vocabulario infantil.",
-        "No hay saltos de tono, ni rupturas estilísticas entre lo original y lo nuevo.",
+        "Consistency in linguistic register.",
+        "Appropriate use of children’s vocabulary.",
+        "No tonal shifts or stylistic breaks between the original and the new content.",
     ],
 )
 

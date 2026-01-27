@@ -24,24 +24,22 @@ class QuestionerAgent(Agent):
         )
 
     def pre_core(self, data: dict) -> dict:
-        data = super().pre_core(data)
+        super().pre_core(data)
         renderer = BookMarkdownRenderer()
 
-        data["messages"].append(
-            HumanMessage(
-                "Creame preguntas para el siguiente cuento:\n\n"
-                + renderer.render(data.get("original_book", ""))
-            )
+        request = HumanMessage(
+            "Creame preguntas para el siguiente cuento:\n\n"
+            + renderer.render(data.get("original_book", ""))
         )
-        return data
+
+        return {"messages": [request]}
 
     def post_core(self, data: dict) -> dict:
-        data = super().post_core(data)
+        super().post_core(data)
 
         last_message = data["messages"][-1].content
-        print(last_message)
+
         parser = BookParser()
         book = parser.parse(last_message)
-        print(book)
-
-        return data
+        book.title = next(iter(self.roles)).criteria.type
+        return {"questions_books": [book]}

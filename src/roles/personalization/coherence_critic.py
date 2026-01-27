@@ -2,12 +2,12 @@ from domain.evaluation_aggregate.criteria import Criteria
 from roles.personalization.critic import ConsultantCriticRole, DeepReviewCriticRole
 
 CRITERIA = Criteria(
-    type="la coherencia",
-    description="Que la historia tenga un desarrollo lógico, sin rupturas o elementos inconexos al integrar la personalización.",
+    type="coherence",
+    description="That the story has a logical development, without breaks or disconnected elements when integrating personalization.",
     indicators=[
-        "Inicio, nudo y desenlace bien definidos.",
-        "Secuencia causa-efecto clara.",
-        "Ausencia de cabos sueltos o contradicciones argumentales.",
+        "Well-defined beginning, middle, and end.",
+        "Clear cause-and-effect sequence.",
+        "Absence of loose ends or plot contradictions.",
     ],
 )
 

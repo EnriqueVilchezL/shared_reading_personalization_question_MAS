@@ -30,25 +30,33 @@ class Organization(ABC):
     Configuration for the organization.
     """
 
-    _agents_config: dict
+    _agents_variables: dict
 
-    def __init__(self, name: str, information_schema: type[Information] = Information):
+    def __init__(self, name: str, information_schema: type[Information] = Information, configuration: dict = {}):
+        """
+        Initializes the organization with the given name and information schema.
+
+        Args:
+            name (str): The name of the organization.
+            information_schema (type[Information]): The information schema for the organization.
+            configuration (dict): The configuration for the organization.
+        """
         self.name = name
         self.agents = []
         self.information_schema = information_schema
         self._core_graph = StateGraph(state_schema=information_schema)
-        self.configuration = {}
-        self.set_agents_configuration({})
+        self.configuration = configuration
+        self.set_agents_variables({})
 
 
-    def set_agents_configuration(self, data: dict):
+    def set_agents_variables(self, data: dict):
         """
-        Configures all agents in the organization with the given data.
+        Sets the variables for all agents in the organization with the given data.
 
         Args:
-            data (dict): The data to configure the agents with.
+            data (dict): The data to set to the agents.
         """
-        self._agents_config = data
+        self._agents_variables = data
 
     def add_agent(self, agent: any):
         """
@@ -59,10 +67,10 @@ class Organization(ABC):
         """
         agent.add_organization(self)
 
-        if agent.name in self._agents_config:
-            agent.configure(self._agents_config[agent.name])
+        if agent.name in self._agents_variables:
+            agent.set_role_variables(self._agents_variables[agent.name])
         else:
-            agent.configure({})
+            agent.set_role_variables({})
 
         self.agents.append(agent)
         self._core_graph.add_node(agent.name, agent.instanciate())

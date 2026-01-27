@@ -2,7 +2,7 @@ from langchain.messages import HumanMessage
 
 from agents.core.base_agent import Agent
 from agents.core.base_lm_config import LMConfiguration
-from agents.personalization.information import Information
+from agents.personalization.information import CriticInformation
 from domain.services.book_renderer import BookMarkdownRenderer
 from domain.services.evaluation_parser import EvaluationParser
 from roles.core.base_role import Role, RoleCollection
@@ -21,11 +21,11 @@ class CriticAgent(Agent):
         lm_config: LMConfiguration | None = None,
     ):
         super().__init__(
-            name=name, roles=roles, lm_config=lm_config, information_schema=Information
+            name=name, roles=roles, lm_config=lm_config, information_schema=CriticInformation
         )
 
     def pre_core(self, data: dict) -> dict:
-        data = super().pre_core(data)
+        super().pre_core(data)
 
         query = ""
         active_role = self.roles.get_active_role()
@@ -36,19 +36,18 @@ class CriticAgent(Agent):
 
         renderer = BookMarkdownRenderer()
 
-        data["messages"].append(
-            HumanMessage(
-                query
-                + "\n\n**Cuento original**:\n"
-                + renderer.render(data.get("original_book", ""))
-                + "\n\n**Cuento personalizado**:\n"
-                + renderer.render(data.get("modified_book", ""))
-            )
+        request = HumanMessage(
+            query
+            + "\n\n**Cuento original**:\n"
+            + renderer.render(data.get("original_book", ""))
+            + "\n\n**Cuento personalizado**:\n"
+            + renderer.render(data.get("modified_book", ""))
         )
-        return data
+
+        return {"messages": [request]}
 
     def post_core(self, data: dict) -> dict:
-        data = super().post_core(data)
+        super().post_core(data)
 
         last_message = data["messages"][-1].content
 

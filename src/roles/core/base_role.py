@@ -225,7 +225,7 @@ class RoleCollection(MutableSet):
 
         return "\n".join(instructions)
 
-    def configure(self, data: dict) -> str:
+    def set_variables(self, data: dict) -> str:
         """
         Compiles the instructions for the given data.
 
