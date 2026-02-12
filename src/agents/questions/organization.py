@@ -34,46 +34,35 @@ class Organization(LangFuseOrganization):
     @override
     def instantiate(self):
         agents_config = self.configuration["agents"]
+        lm_config = LMConfiguration.model_validate(agents_config["questioner"])
         self.add_agent(
             CompletionQuestionerAgent(
-                LMConfiguration.model_validate(
-                    agents_config["completition_questioner"]
-                )
+                lm_config=lm_config
             )
         )
         self.add_agent(
             RecallQuestionerAgent(
-                LMConfiguration.model_validate(
-                    agents_config["recall_questioner"]
-                )
+                lm_config=lm_config
             )
         )
         self.add_agent(
             OpenEndedQuestionerAgent(
-                LMConfiguration.model_validate(
-                    agents_config["open_ended_questioner"]
-                )
+                lm_config=lm_config
             )
         )
         self.add_agent(
             WhQuestionerAgent(
-                LMConfiguration.model_validate(
-                    agents_config["wh_questioner"]
-                )
+                lm_config=lm_config
             )
         )
         self.add_agent(
             DistancingQuestionerAgent(
-                LMConfiguration.model_validate(
-                    agents_config["distancing_questioner"]
-                )
+                lm_config=lm_config
             )
         )
         self.add_agent(
             AggregatorAgent(
-                LMConfiguration.model_validate(
-                    agents_config["aggregator"]
-                )
+                lm_config=lm_config
             )
         )
 

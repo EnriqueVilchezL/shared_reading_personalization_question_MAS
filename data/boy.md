@@ -1,0 +1,5 @@
+- **Animal**: Perro, León, Dinosaurio
+- **Color**: Azul, Verde
+- **Deporte**: Juegos al aire libre, Correr, Saltar
+- **Hobbies**: Dibujar, Pintar, Manualidades
+- **Comidas**: Frutas, Pasta, Galletas

@@ -1,14 +1,6 @@
-from domain.evaluation_aggregate.criteria import Criteria
+from roles.personalization.criteria import VALUE_CRITERIA as CRITERIA
 from roles.personalization.critic import ConsultantCriticRole, DeepReviewCriticRole
 
-CRITERIA = Criteria(
-    type="added narrative value",
-    description="That the personalization is not merely cosmetic, but enriches the story or strengthens the connection with the child reader.",
-    indicators=[
-        "Personalizations that are meaningful to the reader.",
-        "Improved immersion or emotional identification.",
-    ]
-)
 
 class ValueDeepReviewCriticRole(DeepReviewCriticRole):
     """
@@ -17,6 +9,7 @@ class ValueDeepReviewCriticRole(DeepReviewCriticRole):
 
     def __init__(self):
         super().__init__(criteria=CRITERIA)
+
 
 class ValueConsultantCriticRole(ConsultantCriticRole):
     """

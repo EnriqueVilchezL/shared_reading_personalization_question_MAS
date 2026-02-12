@@ -9,17 +9,22 @@ from utils import preserve_last
 
 
 class Information(BaseInformation):
-    preferences: list[Preference]
+    preferences: Annotated[list[Preference], preserve_last]
     """
     User reading preferences.
     """
 
-    original_book: Book
+    original_book: Annotated[Book, preserve_last]
     """
     Original book to be shared.
     """
 
-    modified_book: Book
+    intermediate_books: Annotated[list[Book], operator.add]
+    """
+    Intermediate personalized versions of the book.
+    """
+
+    modified_book: Annotated[Book, preserve_last]
     """
     Personalized version of the book.
     """

@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
 
@@ -15,4 +16,7 @@ class Book(BaseModel):
     )
     pages: list[Page] = Field(
         default_factory=list, description="Ordered collection of pages."
+    )
+    uid: Optional[UUID] = Field(
+        default_factory=uuid4, description="Unique identifier for the book."
     )

@@ -1,14 +1,9 @@
-from domain.evaluation_aggregate.criteria import Criteria
-from roles.personalization.critic import ConsultantCriticRole, DeepReviewCriticRole
-
-CRITERIA = Criteria(
-    type="emotional impact",
-    description="That the personalized story manages to move, entertain, and maintain the interest of the child reader.",
-    indicators=[
-        "The story would generate positive reactions (laughter, surprise, attention).",
-        "The story would generate a desire to reread it or share it.",
-    ]
+from roles.personalization.criteria import EMOTION_CRITERIA as CRITERIA
+from roles.personalization.critic import (
+    ConsultantCriticRole,
+    DeepReviewCriticRole,
 )
+
 
 class EmotionDeepReviewCriticRole(DeepReviewCriticRole):
     """
@@ -17,6 +12,7 @@ class EmotionDeepReviewCriticRole(DeepReviewCriticRole):
 
     def __init__(self):
         super().__init__(criteria=CRITERIA)
+
 
 class EmotionConsultantCriticRole(ConsultantCriticRole):
     """

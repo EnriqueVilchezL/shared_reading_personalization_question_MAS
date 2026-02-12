@@ -33,13 +33,12 @@ def run_personalization_pipeline(
         Book: The personalized version of the story.
     """
     organization = PersonalizationOrganization(configuration=configuration)
-
     organization.set_agents_variables(
         {
             "personalizer": {
                 "preferences": PreferenceMarkdownRenderer().render(preferences)
             },
-            "triage_critic": {
+            "pair_critic": {
                 "preferences": PreferenceMarkdownRenderer().render(preferences)
             },
         }
@@ -115,6 +114,7 @@ def run_pipelines(
         story = run_personalization_pipeline(story, preferences, configuration["organizations"]["personalization"], verbose)
     elif pipeline == "QUESTIONS":
         story = run_questions_pipeline(story, configuration["organizations"]["questions"], verbose)
+
     return story
 
 
@@ -148,7 +148,6 @@ def main():
 
     story = BookParser().parse(story_str)
     preferences = PreferenceParser().parse(preferences_str)
-
     modified_story = run_pipelines(story, preferences, args.pipelines, configuration, args.verbose)
 
     write_to_md_file(args.output_path, BookMarkdownRenderer().render(modified_story))

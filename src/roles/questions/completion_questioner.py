@@ -5,9 +5,10 @@ CRITERIA = Criteria(
     type="C: Completion",
     description="The child is asked to **complete a sentence or a word**.",
     indicators=[
-        "It starts with a question that invites the child to complete with a sentence or word, and then a blank space is left at the end of a sentence",
+        "The question invites the child to complete with a sentence or word",
         "The questions can focus on language structures (rhyme and repetition)"
-    ]
+    ],
+    importance=None,
 )
 
 class CompletionQuestionerRole(QuestionerRole):

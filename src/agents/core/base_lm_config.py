@@ -16,6 +16,11 @@ class LMConfiguration(BaseModel):
         description="The name of the language model to use for the language model's query generation."
     )
 
+    base_url: str = Field(
+        default="http://localhost:11434",
+        description="The base URL of the language model provider's API."
+    )
+
     temperature: float = Field(
         default=1,
         description="The temperature to use for the language model's query generation."
@@ -25,3 +30,9 @@ class LMConfiguration(BaseModel):
         default=False,
         description="Whether to enable reasoning capabilities in the language model."
     )
+
+    api_key: str = Field(
+        default="",
+        description="API key for authenticating with the language model provider, if required."
+    )
+

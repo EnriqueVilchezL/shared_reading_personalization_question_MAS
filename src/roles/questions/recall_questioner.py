@@ -7,7 +7,8 @@ CRITERIA = Criteria(
     indicators=[
         "The questions should help the child remember what has happened in the story",
         "The questions should help the child understand the plot of a story and describe sequences of events"
-    ]
+    ],
+    importance=None,
 )
 
 class RecallQuestionerRole(QuestionerRole):

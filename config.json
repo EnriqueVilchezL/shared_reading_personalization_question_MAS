@@ -1,54 +1,31 @@
 {
     "organizations": {
         "personalization": {
+            "num_generations": 4,
+            "evaluation_mode": "combination",
+            "num_evaluations": 0,
+            "temperatures": [0.75, 1.25],
             "agents":
             {
                 "personalizer": {
                     "base_provider": "ollama",
-                    "base_model": "gemma3:4b",
+                    "base_model": "gemma3:12b-it-qat",
+                    "base_url": "http://localhost:11434",
                     "temperature": 1,
                     "reasoning": false
                 },
-                "triage_critic": {
-                    "base_provider": "ollama",
-                    "base_model": "llama3.1:8b",
-                    "temperature": 1,
-                    "reasoning": false
-                },
-                "coherence_critic": {
+                "pair_critic": {
                     "base_provider": "ollama",
                     "base_model": "qwen3:8b",
-                    "temperature": 1,
+                    "base_url": "http://localhost:11434",
+                    "temperature": 0,
                     "reasoning": true
                 },
-                "emotion_critic": {
+                "edition_critic": {
                     "base_provider": "ollama",
                     "base_model": "qwen3:8b",
-                    "temperature": 1,
-                    "reasoning": true
-                },
-                "moral_critic": {
-                    "base_provider": "ollama",
-                    "base_model": "qwen3:8b",
-                    "temperature": 1,
-                    "reasoning": true
-                },
-                "naturalness_critic": {
-                    "base_provider": "ollama",
-                    "base_model": "qwen3:8b",
-                    "temperature": 1,
-                    "reasoning": true
-                },
-                "style_critic": {
-                    "base_provider": "ollama",
-                    "base_model": "qwen3:8b",
-                    "temperature": 1,
-                    "reasoning": true
-                },
-                "value_critic": {
-                    "base_provider": "ollama",
-                    "base_model": "qwen3:8b",
-                    "temperature": 1,
+                    "base_url": "http://localhost:11434",
+                    "temperature": 0,
                     "reasoning": true
                 }
             }
@@ -56,40 +33,18 @@
         "questions": {
             "agents":
             {
-                "completion_questioner": {
+                "questioner": {
                     "base_provider": "ollama",
-                    "base_model": "gemma3:4b",
-                    "temperature": 1,
-                    "reasoning": false
-                },
-                "distancing_questioner": {
-                    "base_provider": "ollama",
-                    "base_model": "gemma3:4b",
-                    "temperature": 1,
-                    "reasoning": false
-                },
-                "open_ended_questioner": {
-                    "base_provider": "ollama",
-                    "base_model": "gemma3:4b",
-                    "temperature": 1,
-                    "reasoning": false
-                },
-                "recall_questioner": {
-                    "base_provider": "ollama",
-                    "base_model": "gemma3:4b",
-                    "temperature": 1,
-                    "reasoning": false
-                },
-                "wh_questioner": {
-                    "base_provider": "ollama",
-                    "base_model": "gemma3:4b",
+                    "base_model": "gemma3:12b-it-qat",
+                    "base_url": "http://localhost:11434",
                     "temperature": 1,
                     "reasoning": false
                 },
                 "aggregator": {
                     "base_provider": "ollama",
                     "base_model": "qwen3:8b",
-                    "temperature": 1,
+                    "base_url": "http://localhost:11434",
+                    "temperature": 0.5,
                     "reasoning": true
                 }
             }

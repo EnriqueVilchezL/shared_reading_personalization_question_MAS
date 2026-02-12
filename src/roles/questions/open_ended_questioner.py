@@ -7,7 +7,8 @@ CRITERIA = Criteria(
     indicators=[
         "The questions should help the child improve their expressive language",
         "The questions should help the child develop their vocabulary and narrative skills"
-    ]
+    ],
+    importance=None,
 )
 
 class OpenEndedQuestionerRole(QuestionerRole):

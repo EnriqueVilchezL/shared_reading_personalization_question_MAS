@@ -22,7 +22,6 @@ from domain.services.evaluation_parser import EvaluationParser
 from domain.services.evaluation_renderer import EvaluationMarkdownRenderer
 from domain.services.preference_renderer import PreferenceMarkdownRenderer
 from roles.personalization.critic import ConsultantCriticRole, DeepReviewCriticRole
-from roles.personalization.triage_critic import TriageCriticRole
 
 
 @tool
@@ -104,7 +103,7 @@ def request_deep_report_from_critics(
     )
 
     renderer = EvaluationMarkdownRenderer()
-    aggregated_evaluations = "# Critics’ evaluation report:\n"
+    aggregated_evaluations = "# Reporte de evaluación de críticos:\n"
     for eval in report_state.get("evaluations", []):
         aggregated_evaluations += "---\n" + renderer.render(eval) + "\n"
 
@@ -227,6 +226,7 @@ class TriageCriticAgent(Agent):
             type="calidad general de personalización",
             description="Evaluación general de la calidad de la personalización del cuento en función de las preferencias del usuario, considerando aspectos como coherencia, naturalidad, estilo, enseñanza, valor narrativo e impacto emocional.",
             indicators=[],
+            importance="high",
         )
         return_dict = {"evaluations": [evaluation]}
 

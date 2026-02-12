@@ -6,7 +6,8 @@ CRITERIA = Criteria(
     description="The child is asked **what, where, when, who, and why questions**.",
     indicators=[
         "The questions should help the child learn vocabulary that appears in the book"
-    ]
+    ],
+    importance=None,
 )
 
 class WhQuestionerRole(QuestionerRole):

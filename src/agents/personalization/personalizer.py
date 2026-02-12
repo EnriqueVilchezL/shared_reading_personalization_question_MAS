@@ -20,7 +20,8 @@ class PersonalizerAgent(Agent):
         super().__init__(
             name="personalizer",
             roles=RoleCollection(
-                [PersonalizerRole(), PersonalizerEditorRole()], RoleMode.OR
+                [PersonalizerRole(), PersonalizerEditorRole()],
+                mode=RoleMode.OR,
             ),
             lm_config=lm_config,
         )
@@ -28,9 +29,8 @@ class PersonalizerAgent(Agent):
     def pre_core(self, data: dict) -> dict:
         renderer = BookMarkdownRenderer()
 
-        if len(data["evaluations"]) > 0:
+        if isinstance(self.roles.get_active_role(), PersonalizerEditorRole):
             last_evaluation = data["evaluations"][-1]
-            self.roles.activate(PersonalizerEditorRole)
 
             request = HumanMessage(
                 "Después de hacer una evaluación de la personalización hecha por ti, se solicitaron las siguientes ediciones al cuento personalizado segun mis preferencias: \n"
@@ -43,12 +43,11 @@ class PersonalizerAgent(Agent):
             )
 
         else:
-            self.roles.activate(PersonalizerRole)
-
             request = HumanMessage(
                 "Porfavor, personaliza el siguiente libro segun mis preferencias: \n"
                 + renderer.render(data.get("original_book", ""))
             )
+
         return {"messages": [request]}
 
     def post_core(self, data: dict) -> dict:
@@ -56,4 +55,7 @@ class PersonalizerAgent(Agent):
         last_message = data.get("messages", [])[-1].content
         personalized_book = BookParser().parse(last_message)
 
-        return {"modified_book": personalized_book}
+        if isinstance(self.roles.get_active_role(), PersonalizerEditorRole):
+            return {"modified_book": personalized_book}
+        else:
+            return {"intermediate_books": [personalized_book]}

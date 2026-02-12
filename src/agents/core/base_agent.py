@@ -16,6 +16,37 @@ from agents.core.base_organization import Organization
 from roles.core.base_role import Role, RoleCollection
 
 
+def get_llm(lm_config: LMConfiguration):
+    """
+    Initializes and returns a language model based on the provided configuration.
+
+    Args:
+        lm_config (LMConfiguration): The configuration for the language model.
+
+    Returns:
+        Language model instance.
+    """
+
+    if lm_config.base_provider == "ollama":
+        model = init_chat_model(
+            model_provider=lm_config.base_provider,
+            model=lm_config.base_model,
+            base_url=lm_config.base_url,
+            temperature=lm_config.temperature,
+            reasoning=lm_config.reasoning,
+        )
+
+    elif lm_config.base_provider == "inferencer":
+        model = init_chat_model(
+            model_provider="openai",
+            model=lm_config.base_model,
+            base_url=lm_config.base_url,
+            temperature=lm_config.temperature,
+            api_key=lm_config.api_key,
+        )
+
+    return model
+
 class Agent(ABC):
     name: str
     """
@@ -135,12 +166,7 @@ class Agent(ABC):
         Returns:
             CompiledStateGraph: The compiled state graph for the agent.
         """
-        model = init_chat_model(
-            model_provider=self.lm_config.base_provider,
-            model=self.lm_config.base_model,
-            temperature=self.lm_config.temperature,
-            reasoning=self.lm_config.reasoning,
-        )
+        model = get_llm(self.lm_config)
 
         for protocol in self.roles.protocols:
             handoff_tool = create_handoff_tool(

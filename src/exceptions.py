@@ -3,3 +3,6 @@ class RoleException(Exception):
 
 class PermissionException(Exception):
     ...
+
+class OrganizationException(Exception):
+    ...

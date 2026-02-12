@@ -7,7 +7,8 @@ CRITERIA = Criteria(
     indicators=[
         "The questions should help the child develop their vocabulary and conversational and narrative skills",
         "The questions should help the child form a connection between the story and the real world"
-    ]
+    ],
+    importance=None,
 )
 
 class DistancingQuestionerRole(QuestionerRole):
