@@ -33,19 +33,3 @@ class Information(BaseInformation):
     """
     Evaluations of the personalized book.
     """
-
-class CriticInformation(BaseInformation):
-    original_book: Annotated[Book, preserve_last]
-    """
-    Original book to be shared.
-    """
-
-    modified_book: Annotated[Book, preserve_last]
-    """
-    Personalized version of the book.
-    """
-
-    evaluations: Required[Annotated[list[Evaluation], operator.add]]
-    """
-    Evaluations of the personalized book.
-    """

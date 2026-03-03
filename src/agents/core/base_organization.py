@@ -75,6 +75,16 @@ class Organization(ABC):
         self.agents.append(agent)
         self._core_graph.add_node(agent.name, agent.instanciate())
 
+    def add_agents(self, agents: list[any]):
+        """
+        Adds multiple agents to the organization.
+
+        Args:
+            agents (list[any]): The agents to add.
+        """
+        for agent in agents:
+            self.add_agent(agent)
+
     def get_agent(self, name: str) -> any:
         """
         Retrieves an agent from the organization by name.

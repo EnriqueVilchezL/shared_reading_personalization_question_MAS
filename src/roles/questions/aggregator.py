@@ -1,10 +1,13 @@
+from domain.services.category_renderer import CategoriesMarkdownRenderer
 from roles.langfuse_role import LangFuseRole
 from roles.permissions.last_message_permission import LastMessagePermission
-from roles.questions.completion_questioner import CRITERIA as COMPLETION_CRITERIA
-from roles.questions.distancing_questioner import CRITERIA as DISTANCING_CRITERIA
-from roles.questions.open_ended_questioner import CRITERIA as OPEN_ENDED_CRITERIA
-from roles.questions.recall_questioner import CRITERIA as RECALL_CRITERIA
-from roles.questions.wh_questioner import CRITERIA as WH_CRITERIA
+from roles.questions.types import (
+    COMPLETION_TYPE,
+    DISTANCING_TYPE,
+    OPEN_ENDED_TYPE,
+    RECALL_TYPE,
+    WH_TYPE,
+)
 
 
 class AggregatorRole(LangFuseRole):
@@ -20,12 +23,19 @@ class AggregatorRole(LangFuseRole):
             activities=[],
         )
 
+        criteria_list = [
+            COMPLETION_TYPE,
+            RECALL_TYPE,
+            OPEN_ENDED_TYPE,
+            WH_TYPE,
+            DISTANCING_TYPE,
+        ]
+        criteria_str = ""
+        for criteria in criteria_list:
+            criteria_str += CategoriesMarkdownRenderer().render(
+                criteria, indicators=False
+            )
+
         self.configure({
-            "description": f"""
-- {COMPLETION_CRITERIA.type} -> {COMPLETION_CRITERIA.description}
-- {RECALL_CRITERIA.type} -> {RECALL_CRITERIA.description}
-- {OPEN_ENDED_CRITERIA.type} -> {OPEN_ENDED_CRITERIA.description}
-- {WH_CRITERIA.type} -> {WH_CRITERIA.description}
-- {DISTANCING_CRITERIA.type} -> {DISTANCING_CRITERIA.description}
-""",
+            "description": criteria_str,
         })

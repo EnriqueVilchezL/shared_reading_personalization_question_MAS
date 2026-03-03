@@ -10,9 +10,11 @@ from langgraph.types import Send
 from agents.core.base_lm_config import LMConfiguration
 from agents.langfuse_organization import LangFuseOrganization
 from agents.personalization.edition_critic import EditionCriticAgent
+from agents.personalization.extractor import ExtractorAgent
 from agents.personalization.information import Information
 from agents.personalization.pair_critic import PairCriticAgent
 from agents.personalization.personalizer import PersonalizerAgent
+from agents.personalization.planner import PlannerAgent
 from domain.book_aggregate.book import Book
 from exceptions import OrganizationException
 from roles.personalization.personalizer import PersonalizerEditorRole, PersonalizerRole
@@ -104,11 +106,11 @@ class Organization(LangFuseOrganization):
         """Routes to the personalization editor after evaluations."""
 
         last_evaluation = state.get("evaluations", [])[-1]
-        if "ninguno" in last_evaluation.changes.lower():
+        if not ("cumple parcialmente" in last_evaluation.label.lower() or "no cumple" in last_evaluation.label.lower()):
             return END
 
         else:
-            return "personalization_editor"
+            return "personalizer_editor"
 
     def collect_books(self, state: dict):
         return {"original_book": state.get("original_book")}
@@ -171,7 +173,21 @@ class Organization(LangFuseOrganization):
     def _add_personalizers(self, personalizer_cfg, num_generations):
         temperatures = self._sample_temperatures(num_generations)
 
+        # extractor_agent = self._build_extractor(
+        #     extractor_cfg,
+        #     name="extractor",
+        # )
+        #self.add_agent(extractor_agent)
+        #self._core_graph.add_edge(START, extractor_agent.name)
+
+        agents = []
         for i, temp in enumerate(temperatures):
+            # planner_agent = self._build_planner(
+            #     planner_cfg,
+            #     temperature=float(temp),
+            #     name=f"planner_gen_{i + 1}",
+            # )
+
             agent = self._build_personalizer(
                 personalizer_cfg,
                 temperature=float(temp),
@@ -179,9 +195,22 @@ class Organization(LangFuseOrganization):
             )
 
             self.add_agent(agent)
+            # self.add_agent(planner_agent)
+            # self._core_graph.add_edge(extractor_agent.name, agent.name)
+            # self._core_graph.add_edge(planner_agent.name, agent.name)
             self._core_graph.add_edge(START, agent.name)
-            self._core_graph.add_edge(agent.name, "collector")
+            agents.append(agent.name)
 
+        self._core_graph.add_edge(agents, "collector")
+
+    def _build_planner(self, cfg, temperature, name):
+        config = LMConfiguration.model_validate(cfg)
+        config.temperature = temperature
+
+        agent = PlannerAgent(config)
+        agent.name = name
+        agent.set_role_variables(self._agents_variables.get("planner", {}))
+        return agent
 
     def _build_personalizer(self, cfg, temperature, name):
         config = LMConfiguration.model_validate(cfg)
@@ -193,6 +222,13 @@ class Organization(LangFuseOrganization):
         agent.roles.activate(PersonalizerRole)
         return agent
 
+    def _build_extractor(self, cfg, name):
+        config = LMConfiguration.model_validate(cfg)
+
+        agent = ExtractorAgent(config)
+        agent.name = name
+        agent.set_role_variables(self._agents_variables.get("extractor", {}))
+        return agent
 
     def _sample_temperatures(self, num_generations):
         min_temp, max_temp = self.configuration.get("temperatures", [0.5, 1.5])
@@ -243,7 +279,7 @@ class Organization(LangFuseOrganization):
             agents_config["personalizer"]
         )
         editor = PersonalizerAgent(editor_config)
-        editor.name = "personalization_editor"
+        editor.name = "personalizer_editor"
         editor.roles.activate(PersonalizerEditorRole)
         editor.set_role_variables(self._agents_variables.get("personalizer", {}))
         self.add_agent(editor)
@@ -254,9 +290,9 @@ class Organization(LangFuseOrganization):
             "edition_critic",
             self.route_edition,
             {
-                "personalization_editor": "personalization_editor",
+                "personalizer_editor": "personalizer_editor",
                 END: END,
             },
         )
 
-        self._core_graph.add_edge("personalization_editor", END)
+        self._core_graph.add_edge("personalizer_editor", END)

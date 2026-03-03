@@ -1,15 +1,15 @@
 {
     "organizations": {
         "personalization": {
-            "num_generations": 4,
+            "num_generations": 3,
             "evaluation_mode": "combination",
             "num_evaluations": 0,
-            "temperatures": [0.75, 1.25],
+            "temperatures": [0.90, 1.10],
             "agents":
             {
                 "personalizer": {
                     "base_provider": "ollama",
-                    "base_model": "gemma3:12b-it-qat",
+                    "base_model": "gemma3:27b",
                     "base_url": "http://localhost:11434",
                     "temperature": 1,
                     "reasoning": false
@@ -18,14 +18,14 @@
                     "base_provider": "ollama",
                     "base_model": "qwen3:8b",
                     "base_url": "http://localhost:11434",
-                    "temperature": 0,
+                    "temperature": 0.1,
                     "reasoning": true
                 },
                 "edition_critic": {
                     "base_provider": "ollama",
-                    "base_model": "qwen3:8b",
+                    "base_model": "gpt-oss:20b",
                     "base_url": "http://localhost:11434",
-                    "temperature": 0,
+                    "temperature": 0.5,
                     "reasoning": true
                 }
             }
@@ -33,18 +33,32 @@
         "questions": {
             "agents":
             {
-                "questioner": {
+                "extractor": {
                     "base_provider": "ollama",
-                    "base_model": "gemma3:12b-it-qat",
+                    "base_model": "qwen3:14b",
                     "base_url": "http://localhost:11434",
                     "temperature": 1,
-                    "reasoning": false
+                    "reasoning": true
+                },
+                "questioner": {
+                    "base_provider": "ollama",
+                    "base_model": "gpt-oss:20b",
+                    "base_url": "http://localhost:11434",
+                    "temperature": 1,
+                    "reasoning": true
                 },
                 "aggregator": {
                     "base_provider": "ollama",
-                    "base_model": "qwen3:8b",
+                    "base_model": "gpt-oss:20b",
                     "base_url": "http://localhost:11434",
-                    "temperature": 0.5,
+                    "temperature": 0.1,
+                    "reasoning": true
+                },
+                "edition_critic": {
+                    "base_provider": "ollama",
+                    "base_model": "gpt-oss:20b",
+                    "base_url": "http://localhost:11434",
+                    "temperature": 0.1,
                     "reasoning": true
                 }
             }

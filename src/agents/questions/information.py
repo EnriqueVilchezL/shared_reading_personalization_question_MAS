@@ -3,11 +3,12 @@ from typing import Annotated, Required
 
 from agents.core.base_information import Information as BaseInformation
 from domain.book_aggregate.book import Book
-from utils import preserve_last
+from domain.evaluation_aggregate.evaluation import Evaluation
+from utils import add_to_set, preserve_last
 
 
 class Information(BaseInformation):
-    original_book: Annotated[Book, preserve_last]
+    original_book: Required[Annotated[Book, preserve_last]]
     """
     Original book to be shared.
     """
@@ -17,9 +18,17 @@ class Information(BaseInformation):
     Book with integrated questions.
     """
 
-    questions_books: Required[Annotated[list[Book], operator.add]]
+    questions_book: Annotated[Book, preserve_last]
     """
     Books with questions created about the original book.
     """
 
+    questions_books: Annotated[set[Book], add_to_set]
+    """
+    Books with questions created about the original book.
+    """
 
+    evaluations: Required[Annotated[list[Evaluation], operator.add]]
+    """
+    Evaluations of the personalized book.
+    """

@@ -14,15 +14,23 @@ class BookMarkdownRenderer:
         self,
         include_images: bool = False,
         include_images_data: bool = False,
+        include_num_pages: bool = False,
         ignore_content_types: list[ContentType] = None
     ):
         self.include_images = include_images
         self.include_images_data = include_images_data
+        self.include_num_pages = include_num_pages
         self.ignore_types = ignore_content_types or []
 
     def render(self, book: Book) -> str:
         """Orchestrates the rendering of the entire book."""
-        md_output = [f"# {book.title}\n"]
+
+        if self.include_num_pages:
+            book_title = f"{book.title} (Total Pages: {len(book.pages)})"
+        else:
+            book_title = book.title
+
+        md_output = [f"# {book_title}\n"]
 
         if self.include_images and book.front_page_image:
             md_output.append(self._render_image(book.front_page_image))

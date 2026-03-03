@@ -1,10 +1,13 @@
 import copy
+import random
 
 from langchain.messages import HumanMessage
 
 from agents.core.base_agent import Agent
 from agents.core.base_lm_config import LMConfiguration
+from domain.book_aggregate.book import Book
 from domain.book_aggregate.content import Content, ContentType
+from domain.book_aggregate.page import Page
 from domain.services.book_parser import BookParser
 from domain.services.book_renderer import BookMarkdownRenderer
 from roles.questions.aggregator import AggregatorRole
@@ -29,18 +32,34 @@ class AggregatorAgent(Agent):
         super().pre_core(data)
         renderer = BookMarkdownRenderer()
 
+        # Aggregate questions from different questioner agents into a single book with all the questions per page.
+        aggregated_questions = Book(title="# CROWD Questions per page", pages=[])
+        for page_number in range(len(data.get("original_book").pages)):
+            content_str = ""
+
+            books = list(data.get("questions_books", []))
+
+            for questions_book in random.sample(books, len(books)):
+                content_str += f"**{questions_book.title}**: {questions_book.pages[page_number].contents[0].text}\n"
+
+            aggregated_questions.pages.append(
+                Page(
+                    contents=[
+                        Content(
+                            type=ContentType.TEXT,
+                            text=content_str,
+                        )
+                    ]
+                )
+            )
+
         request = HumanMessage(
-            "Porfavor, selecciona las preguntas:\n\n"
+            "Porfavor, selecciona para este cuento:\n\n"
             + "**Cuento original**:\n"
             + renderer.render(data.get("original_book", ""))
             + "\n\n"
-            + "**Preguntas generadas para CROWD**:\n"
-            + "\n\n".join(
-                [
-                    renderer.render(questions_book)
-                    for questions_book in data.get("questions_books", [])
-                ]
-            )
+            + "**Intervenciones CROWD para cada página**:\n"
+            + renderer.render(aggregated_questions)
         )
 
         return {"messages": [request]}
@@ -53,12 +72,10 @@ class AggregatorAgent(Agent):
         parser = BookParser()
         book = parser.parse(last_message)
 
-        print(book)
-        original_book = copy.deepcopy(data["original_book"])
-        for original_page, output_page in zip(original_book.pages, book.pages):
+        modified_book = copy.deepcopy(data["original_book"])
+        for original_page, output_page in zip(modified_book.pages, book.pages):
             original_page.contents.append(
                 Content(type=ContentType.QUESTION, text=output_page.contents[0].text)
             )
 
-        print(BookMarkdownRenderer().render(original_book))
-        return {"modified_book": original_book}
+        return {"questions_book": book, "modified_book": modified_book}

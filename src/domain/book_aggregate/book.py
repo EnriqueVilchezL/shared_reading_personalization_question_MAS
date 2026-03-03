@@ -20,3 +20,9 @@ class Book(BaseModel):
     uid: Optional[UUID] = Field(
         default_factory=uuid4, description="Unique identifier for the book."
     )
+
+    def __eq__(self, value):
+        return isinstance(value, Book) and self.uid == value.uid
+
+    def __hash__(self):
+        return hash(self.uid)

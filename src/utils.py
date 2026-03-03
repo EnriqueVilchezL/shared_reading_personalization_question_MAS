@@ -11,6 +11,16 @@ def preserve_last(old: any, new: any) -> any:
     """
     return new
 
+def add_to_set(old: set, new: set) -> set:
+    """
+    Merges two sets by adding the new set to the old one.
+
+    Args:
+        old (set): The original set.
+        new (set): The new set to merge.
+    """
+    return old.union(new)
+
 def remove_thinking(text: str) -> str:
     """
     Removes the thinking part from the text.

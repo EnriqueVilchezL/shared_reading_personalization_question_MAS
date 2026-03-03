@@ -1,4 +1,4 @@
-from domain.services.criteria_renderer import CriteriaMarkdownRenderer
+from domain.services.category_renderer import CategoriesMarkdownRenderer
 from roles.langfuse_role import LangFuseRole
 from roles.permissions.last_message_permission import LastMessagePermission
 from roles.personalization.criteria import (
@@ -36,7 +36,7 @@ class PairCriticRole(LangFuseRole):
         ]
         criteria_str = ""
         for criteria in criteria_list:
-            criteria_str += CriteriaMarkdownRenderer().render(
+            criteria_str += CategoriesMarkdownRenderer().render(
                 criteria, indicators=False
             )
 

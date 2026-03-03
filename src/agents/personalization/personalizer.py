@@ -43,9 +43,14 @@ class PersonalizerAgent(Agent):
             )
 
         else:
+            # last_message = (
+            #     data.get("messages", [])[-1].content if data.get("messages") else ""
+            # )
             request = HumanMessage(
-                "Porfavor, personaliza el siguiente libro segun mis preferencias: \n"
+                "Hazlo para este cuento: \n"
                 + renderer.render(data.get("original_book", ""))
+                # +"\n\n**Debes hacer el cuento con actantes y conflicto similares al cuento de referencia**:\n"
+                # + last_message
             )
 
         return {"messages": [request]}

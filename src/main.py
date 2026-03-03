@@ -35,10 +35,16 @@ def run_personalization_pipeline(
     organization = PersonalizationOrganization(configuration=configuration)
     organization.set_agents_variables(
         {
+            # "planner": {
+            #     "preferences": PreferenceMarkdownRenderer().render(preferences)
+            # },
             "personalizer": {
                 "preferences": PreferenceMarkdownRenderer().render(preferences)
             },
             "pair_critic": {
+                "preferences": PreferenceMarkdownRenderer().render(preferences)
+            },
+            "edition_critic": {
                 "preferences": PreferenceMarkdownRenderer().render(preferences)
             },
         }
@@ -144,7 +150,7 @@ def main():
 
     story_str = load_md_file(args.story_path)
     preferences_str = load_md_file(args.preferences_path)
-    configuration = load_json_file("config.json")
+    configuration = load_json_file("config_cloud.json")
 
     story = BookParser().parse(story_str)
     preferences = PreferenceParser().parse(preferences_str)

@@ -4,7 +4,7 @@ from langchain.messages import HumanMessage
 
 from agents.core.base_agent import Agent
 from agents.core.base_lm_config import LMConfiguration
-from domain.evaluation_aggregate.criteria import Criteria
+from domain.evaluation_aggregate.category import Category
 from domain.evaluation_aggregate.evaluation import Evaluation
 from domain.services.book_renderer import BookMarkdownRenderer
 from roles.personalization.pair_critic import PairCriticRole
@@ -54,7 +54,7 @@ class PairCriticAgent(Agent):
     def post_core(self, data: dict) -> dict:
         last_message = data["messages"][-1].content
 
-        lines = last_message.replace("*", "").splitlines()
+        lines = last_message.replace("*", "").replace("`", "").splitlines()
 
         evaluation = Evaluation(label="", reasoning="", changes="")
         finish = False
@@ -81,7 +81,7 @@ class PairCriticAgent(Agent):
 
             i += 1
 
-        evaluation.criteria = Criteria(
+        evaluation.criteria = Category(
             type="Pairwise Comparison",
             description="Comparison between two personalized versions of the book.",
             indicators=[],

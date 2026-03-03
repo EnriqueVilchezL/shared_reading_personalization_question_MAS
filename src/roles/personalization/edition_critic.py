@@ -1,4 +1,4 @@
-from domain.services.criteria_renderer import CriteriaMarkdownRenderer
+from domain.services.category_renderer import CategoriesMarkdownRenderer
 from roles.langfuse_role import LangFuseRole
 from roles.permissions.last_message_permission import LastMessagePermission
 from roles.personalization.criteria import (
@@ -28,15 +28,15 @@ class EditionCriticRole(LangFuseRole):
         criteria_list = [
             COHERENCE_CRITERIA,
             LINGUISTIC_CRITERIA,
+            EMOTION_CRITERIA,
+            MORAL_CRITERIA,
             NATURALNESS_CRITERIA,
             STYLE_CRITERIA,
-            MORAL_CRITERIA,
             VALUE_CRITERIA,
-            EMOTION_CRITERIA,
             VERISIMILITUDE_CRITERIA,
         ]
         for criteria in criteria_list:
-            criteria_str += CriteriaMarkdownRenderer().render(
+            criteria_str += CategoriesMarkdownRenderer().render(
                 criteria, indicators=False
             )
 

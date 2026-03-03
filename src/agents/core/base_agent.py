@@ -4,6 +4,7 @@ from typing import override
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import AIMessage
+from langchain_ollama import ChatOllama
 from langgraph.graph.state import CompiledStateGraph, StateGraph
 from langgraph_supervisor.handoff import (
     create_handoff_tool,
@@ -28,8 +29,7 @@ def get_llm(lm_config: LMConfiguration):
     """
 
     if lm_config.base_provider == "ollama":
-        model = init_chat_model(
-            model_provider=lm_config.base_provider,
+        model = ChatOllama(
             model=lm_config.base_model,
             base_url=lm_config.base_url,
             temperature=lm_config.temperature,
@@ -42,8 +42,17 @@ def get_llm(lm_config: LMConfiguration):
             model=lm_config.base_model,
             base_url=lm_config.base_url,
             temperature=lm_config.temperature,
-            api_key=lm_config.api_key,
         )
+
+    elif lm_config.base_provider == "openrouter":
+        from langchain_openrouter import ChatOpenRouter
+
+        model = ChatOpenRouter(
+            model=lm_config.base_model,
+            temperature=lm_config.temperature,
+            max_retries=3
+        )
+
 
     return model
 

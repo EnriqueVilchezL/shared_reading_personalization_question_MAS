@@ -1,5 +1,0 @@
-- **Animal**: Gatos, Mariposas, Conejos
-- **Color**: Azul, Morado, Amarillo
-- **Deporte**: Bailar, Saltar
-- **Hobbies**: Dibujar, Colorear, Jugar con muñecas, Escuchar cuentos
-- **Comidas**: Frutas, Yogur, Galletas
