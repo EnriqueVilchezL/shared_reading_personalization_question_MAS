@@ -9,21 +9,21 @@
             {
                 "personalizer": {
                     "base_provider": "ollama",
-                    "base_model": "gemma3:27b",
+                    "base_model": "gpt-oss:120b",
                     "base_url": "http://localhost:11434",
                     "temperature": 1,
                     "reasoning": false
                 },
                 "pair_critic": {
                     "base_provider": "ollama",
-                    "base_model": "qwen3:8b",
+                    "base_model": "gpt-oss:120b",
                     "base_url": "http://localhost:11434",
                     "temperature": 0.1,
                     "reasoning": true
                 },
                 "edition_critic": {
                     "base_provider": "ollama",
-                    "base_model": "gpt-oss:20b",
+                    "base_model": "gpt-oss:120b",
                     "base_url": "http://localhost:11434",
                     "temperature": 0.5,
                     "reasoning": true
@@ -35,28 +35,28 @@
             {
                 "extractor": {
                     "base_provider": "ollama",
-                    "base_model": "qwen3:14b",
+                    "base_model": "gpt-oss:120b",
                     "base_url": "http://localhost:11434",
                     "temperature": 1,
                     "reasoning": true
                 },
                 "questioner": {
                     "base_provider": "ollama",
-                    "base_model": "gpt-oss:20b",
+                    "base_model": "gpt-oss:120b",
                     "base_url": "http://localhost:11434",
                     "temperature": 1,
                     "reasoning": true
                 },
                 "aggregator": {
                     "base_provider": "ollama",
-                    "base_model": "gpt-oss:20b",
+                    "base_model": "gpt-oss:120b",
                     "base_url": "http://localhost:11434",
                     "temperature": 0.1,
                     "reasoning": true
                 },
                 "edition_critic": {
                     "base_provider": "ollama",
-                    "base_model": "gpt-oss:20b",
+                    "base_model": "gpt-oss:120b",
                     "base_url": "http://localhost:11434",
                     "temperature": 0.1,
                     "reasoning": true

@@ -2,5 +2,6 @@ export OLLAMA_MAX_LOADED_MODELS=1
 export OLLAMA_NUM_PARALLEL=6
 export OLLAMA_FLASH_ATTENTION=1
 export OLLAMA_PROMPT_CACHE=1
+export OLLAMA_KEEP_ALIVE="30s"
 export OLLAMA_CONTEXT_LENGTH=24576
-ollama serve
+caffeinate ollama serve

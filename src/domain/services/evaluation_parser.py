@@ -46,9 +46,9 @@ class EvaluationParser:
         reasoning: REASONING_HEADER LINE+
         changes: CHANGES_HEADER LINE+
 
-        LABEL_HEADER: BOLD? ("Etiqueta" | "Calidad" | "Etiqueta asignada" | "Respuesta" | "Answer") BOLD? ":"
-        REASONING_HEADER: BOLD? "Razonamiento" BOLD? ":"
-        CHANGES_HEADER: BOLD? ("Cambios" | "Cambios sugeridos" | "Cambios requeridos" | "Cambios recomendados") BOLD? ":"
+        LABEL_HEADER: BOLD? ("Etiqueta" | "Calidad" | "Etiqueta asignada" | "Respuesta" | "Answer" | "Descripcion" | "Description") BOLD? ":"
+        REASONING_HEADER: BOLD? ("Razonamiento") BOLD? ":"
+        CHANGES_HEADER: BOLD? ("Cambios" | "Cambios sugeridos" | "Cambios requeridos" | "Cambios recomendados" | "Solicitud" | "Request") BOLD? ":"
 
         BOLD: "**"
 

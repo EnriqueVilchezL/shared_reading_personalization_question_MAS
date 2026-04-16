@@ -4,7 +4,6 @@ from agents.core.base_agent import Agent
 from agents.core.base_lm_config import LMConfiguration
 from domain.services.book_renderer import BookMarkdownRenderer
 from domain.services.evaluation_parser import EvaluationParser
-from roles.core.base_role import RoleCollection, RoleMode
 from roles.personalization.edition_critic import EditionCriticRole
 
 

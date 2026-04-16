@@ -11,11 +11,13 @@ from agents.core.base_lm_config import LMConfiguration
 from agents.langfuse_organization import LangFuseOrganization
 from agents.personalization.edition_critic import EditionCriticAgent
 from agents.personalization.extractor import ExtractorAgent
+from agents.personalization.image_editor import ImageEditorAgent
 from agents.personalization.information import Information
 from agents.personalization.pair_critic import PairCriticAgent
 from agents.personalization.personalizer import PersonalizerAgent
 from agents.personalization.planner import PlannerAgent
 from domain.book_aggregate.book import Book
+from domain.services.image_editor import image_editor_factory
 from exceptions import OrganizationException
 from roles.personalization.personalizer import PersonalizerEditorRole, PersonalizerRole
 
@@ -106,7 +108,10 @@ class Organization(LangFuseOrganization):
         """Routes to the personalization editor after evaluations."""
 
         last_evaluation = state.get("evaluations", [])[-1]
-        if not ("cumple parcialmente" in last_evaluation.label.lower() or "no cumple" in last_evaluation.label.lower()):
+        if not (
+            "cumple parcialmente" in last_evaluation.label.lower()
+            or "no cumple" in last_evaluation.label.lower()
+        ):
             return END
 
         else:
@@ -114,6 +119,9 @@ class Organization(LangFuseOrganization):
 
     def collect_books(self, state: dict):
         return {"original_book": state.get("original_book")}
+
+    def end_text_personalization(self, state: dict) -> dict:
+        return {}
 
     def distribute_evaluations(self, state: dict) -> list[Send]:
         """A conditional router that dispatches isolated book pairs to critics."""
@@ -166,6 +174,20 @@ class Organization(LangFuseOrganization):
 
         return self._core_graph.compile()
 
+    def _add_image_editing_pipeline(self, agents_config):
+        # Image editor
+        editor_config = LMConfiguration.model_validate(agents_config["image_editor"])
+
+        image_editing_service = image_editor_factory(
+            editor=editor_config["base_provider"], configuration=editor_config
+        )
+        image_editor = ImageEditorAgent(image_editing_service, editor_config)
+        image_editor.name = "image_editor"
+        self.add_agent(image_editor)
+
+        # Connect it to the edition critic
+        self._core_graph.add_edge("image_editor", END)
+
     def _add_core_nodes(self):
         self._core_graph.add_node("collector", self.collect_books)
         self._core_graph.add_node("merge_evaluations", self.merge_evaluations)
@@ -177,8 +199,8 @@ class Organization(LangFuseOrganization):
         #     extractor_cfg,
         #     name="extractor",
         # )
-        #self.add_agent(extractor_agent)
-        #self._core_graph.add_edge(START, extractor_agent.name)
+        # self.add_agent(extractor_agent)
+        # self._core_graph.add_edge(START, extractor_agent.name)
 
         agents = []
         for i, temp in enumerate(temperatures):
@@ -275,9 +297,7 @@ class Organization(LangFuseOrganization):
         self.add_agent(EditionCriticAgent(edition_critic_config))
 
         # Personalization editor
-        editor_config = LMConfiguration.model_validate(
-            agents_config["personalizer"]
-        )
+        editor_config = LMConfiguration.model_validate(agents_config["personalizer"])
         editor = PersonalizerAgent(editor_config)
         editor.name = "personalizer_editor"
         editor.roles.activate(PersonalizerEditorRole)
@@ -291,8 +311,8 @@ class Organization(LangFuseOrganization):
             self.route_edition,
             {
                 "personalizer_editor": "personalizer_editor",
-                END: END,
+                "image_editor": "image_editor",
             },
         )
 
-        self._core_graph.add_edge("personalizer_editor", END)
+        self._core_graph.add_edge("personalizer_editor", "image_editor")

@@ -78,4 +78,4 @@ class BookMarkdownRenderer:
             return f"![{image.caption}](data:image/png;base64,{image.data})"
         else:
             # Fallback to a placeholder or filename if URL isn't available in data
-            return f"![{image.caption}](image.png)"
+            return f"Image Description: {image.caption}"

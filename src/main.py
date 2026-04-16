@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 
 from dotenv import load_dotenv
 
+from agents.combined.organization import Organization as CombinedOrganization
 from agents.personalization.organization import (
     Organization as PersonalizationOrganization,
 )
@@ -35,9 +36,6 @@ def run_personalization_pipeline(
     organization = PersonalizationOrganization(configuration=configuration)
     organization.set_agents_variables(
         {
-            # "planner": {
-            #     "preferences": PreferenceMarkdownRenderer().render(preferences)
-            # },
             "personalizer": {
                 "preferences": PreferenceMarkdownRenderer().render(preferences)
             },
@@ -96,6 +94,46 @@ def run_questions_pipeline(story: Book, configuration: dict = {}, verbose: bool 
 
     return final_state["modified_book"]
 
+def run_combined_pipeline(
+        story: Book, preferences: list[Preference], configuration: dict = {}, verbose: bool = False
+    ) -> Book:
+    """
+    Runs the combined generation pipeline on a given story.
+
+    Args:
+        story (Book): The original story to be personalized.
+        preferences (list[Preference]): The user reading preferences.
+        configuration (dict): Configuration for the organization.
+        verbose (bool): If True, prints detailed output during the process.
+
+    Returns:
+        Book: The story with generated questions.
+    """
+    organization = CombinedOrganization(configuration=configuration)
+
+    organization.set_agents_variables(
+        {
+            "combined": {
+                "preferences": PreferenceMarkdownRenderer().render(preferences)
+            }
+        }
+    )
+
+    graph = organization.instantiate()
+
+    final_state = {}
+
+    for step in graph.stream(
+        input={"original_book": story},
+        config=organization.configuration,
+    ):
+        for update in step.values():
+            final_state.update(update)
+            if verbose:
+                for message in update.get("messages", []):
+                    message.pretty_print()
+
+    return final_state["modified_book"]
 
 def run_pipelines(
     story: Book, preferences: list[Preference], pipeline: str, configuration: dict = {},verbose: bool = False
@@ -120,7 +158,9 @@ def run_pipelines(
         story = run_personalization_pipeline(story, preferences, configuration["organizations"]["personalization"], verbose)
     elif pipeline == "QUESTIONS":
         story = run_questions_pipeline(story, configuration["organizations"]["questions"], verbose)
-
+    elif pipeline == "SINGLE":
+        story = run_combined_pipeline(story, preferences, configuration["organizations"]["combined"], verbose)
+    
     return story
 
 
@@ -138,7 +178,7 @@ def main():
     parser.add_argument(
         "--pipelines",
         help="The pipelines to run",
-        choices=["ALL", "PERSONALIZATION", "QUESTIONS"],
+        choices=["ALL", "PERSONALIZATION", "QUESTIONS", "SINGLE"],
         default="ALL",
         type=str.upper,
     )

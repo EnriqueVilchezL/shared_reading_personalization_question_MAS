@@ -21,6 +21,10 @@
                     "base_provider": "openrouter",
                     "base_model": "google/gemini-3.1-pro-preview",
                     "temperature": 1
+                },
+                "image_editor": {
+                    "base_provider": "openrouter",
+                    "base_model": "google/gemini-3-flash-preview"
                 }
             }
         },
@@ -40,6 +44,16 @@
                 "aggregator": {
                     "base_provider": "openrouter",
                     "base_model": "google/gemini-3.1-pro-preview",
+                    "temperature": 1
+                }
+            }
+        },
+        "combined": {
+            "agents":
+            {
+                "combined": {
+                    "base_provider": "openrouter",
+                    "base_model": "google/gemini-3-flash-preview",
                     "temperature": 1
                 }
             }

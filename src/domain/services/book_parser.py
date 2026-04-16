@@ -1,11 +1,14 @@
-from lark import Lark, Transformer
+import base64
 from typing import List, Union
 
-# Domain Imports (Assumed existing)
+from lark import Lark, Transformer
+
+# Domain Imports
 from domain.book_aggregate.book import Book
 from domain.book_aggregate.content import Content, ContentType
 from domain.book_aggregate.image import Image
 from domain.book_aggregate.page import Page
+
 
 class BookDomainTransformer(Transformer):
     """
@@ -44,17 +47,17 @@ class BookDomainTransformer(Transformer):
 
     def _create_content_object(self, buffer: List[str]) -> Content:
         """
-        Joins the lines using '\n' to keep the user's formatting 
+        Joins the lines using '\n' to keep the user's formatting
         within the Content object.
         """
         # Join using newline to satisfy the requirement
         full_text = "\n".join(buffer).strip()
-        
+
         # Business Rule: Detect Questions
         if full_text.lower().startswith("pregunta:"):
             clean_text = full_text.split(":", 1)[1].strip()
             return Content(type=ContentType.QUESTION, text=clean_text)
-            
+
         return Content(type=ContentType.TEXT, text=full_text)
 
     def image_entry(self, items) -> Image:
@@ -63,7 +66,10 @@ class BookDomainTransformer(Transformer):
             parts = raw.split("]:(")
             caption = parts[0].replace("![", "", 1).strip()
             url = parts[1].rstrip(")").strip()
-            return Image(data=url, caption=caption)
+            with open(url, "rb") as f:
+                data = base64.b64encode(f.read()).decode("utf-8")
+
+            return Image(data=data, caption=caption)
         except Exception:
             return Image(data="", caption="Invalid Image Format")
 
@@ -100,8 +106,8 @@ class BookDomainTransformer(Transformer):
             header = first_item
             pages = items[1:]
             return Book(
-                title=header["title"], 
-                front_page_image=header["front_page_image"], 
+                title=header["title"],
+                front_page_image=header["front_page_image"],
                 pages=pages
             )
         return Book(title="Untitled", front_page_image=None, pages=items)
@@ -120,13 +126,13 @@ class BookParser:
         front_image: image_entry
 
         page_block: SEP (image_entry | text_block)*
-        
+
         text_block: (TEXT | PARA_SEP)+
         image_entry: IMAGE_LINE
 
         IMAGE_LINE: /!\[.*?\]:\([^)]+\)/
         SEP.2: "---"
-        
+
         TEXT.1: /[^\n]+/
         PARA_SEP: /\n{2,}/
 

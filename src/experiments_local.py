@@ -186,9 +186,12 @@ def run_personalization(base_route: str):
 
 def run_questions(base_route: str):
     stories = [
-        #"caballero.md",
+        "caballero.md",
         "calendario.md",
-        #"yi.md",
+        "cuaderno.md",
+        "mensaje.md",
+        "rana.md",
+        "yi.md",
     ]
 
     for story in stories:
@@ -223,7 +226,7 @@ def main():
     base_route = "data"
 
     run_personalization(base_route)
-    # run_questions(base_route)  # Uncomment if needed
+    run_questions(base_route)
 
 if __name__ == "__main__":
     main()
