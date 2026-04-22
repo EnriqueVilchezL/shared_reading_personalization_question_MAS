@@ -14,7 +14,7 @@ from domain.services.book_parser import BookParser
 from domain.services.book_renderer import BookMarkdownRenderer
 from domain.services.preference_parser import PreferenceParser
 from domain.services.preference_renderer import PreferenceMarkdownRenderer
-from utils import load_json_file, load_md_file, write_to_md_file
+from utils import load_json_file
 
 load_dotenv()
 
