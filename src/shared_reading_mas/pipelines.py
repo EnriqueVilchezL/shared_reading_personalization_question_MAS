@@ -14,7 +14,7 @@ from shared_reading_mas.domain.services.preference_renderer import (
 )
 
 
-def run_personalization_pipeline(
+async def run_personalization_pipeline(
     story: Book, preferences: list[Preference], configuration: dict = {}, verbose: bool = False
 ) -> Book:
     """
@@ -48,7 +48,7 @@ def run_personalization_pipeline(
 
     final_state = {}
 
-    for step in graph.stream(
+    async for step in graph.astream(
         input={"original_book": story, "preferences": preferences},
         config=organization.configuration,
     ):
@@ -60,7 +60,7 @@ def run_personalization_pipeline(
 
     return final_state["modified_book"]
 
-def run_questions_pipeline(story: Book, configuration: dict = {}, verbose: bool = False) -> Book:
+async def run_questions_pipeline(story: Book, configuration: dict = {}, verbose: bool = False) -> Book:
     """
     Runs the question generation pipeline on a given story.
 
@@ -78,7 +78,7 @@ def run_questions_pipeline(story: Book, configuration: dict = {}, verbose: bool 
 
     final_state = {}
 
-    for step in graph.stream(
+    async for step in graph.astream(
         input={"original_book": story},
         config=organization.configuration,
     ):
@@ -90,7 +90,7 @@ def run_questions_pipeline(story: Book, configuration: dict = {}, verbose: bool 
 
     return final_state["modified_book"]
 
-def run_combined_pipeline(
+async def run_combined_pipeline(
         story: Book, preferences: list[Preference], configuration: dict = {}, verbose: bool = False
     ) -> Book:
     """
@@ -119,7 +119,7 @@ def run_combined_pipeline(
 
     final_state = {}
 
-    for step in graph.stream(
+    async for step in graph.stream(
         input={"original_book": story},
         config=organization.configuration,
     ):
@@ -131,7 +131,7 @@ def run_combined_pipeline(
 
     return final_state["modified_book"]
 
-def run_pipelines(
+async def run_pipelines(
     story: Book, preferences: list[Preference], pipeline: str, configuration: dict = {},verbose: bool = False
 ) -> Book:
     """
@@ -148,13 +148,13 @@ def run_pipelines(
         Book: The processed version of the story.
     """
     if pipeline == "ALL":
-        story = run_personalization_pipeline(story, preferences, configuration["organizations"]["personalization"], verbose)
-        story = run_questions_pipeline(story, configuration["organizations"]["questions"], verbose)
+        story = await run_personalization_pipeline(story, preferences, configuration["organizations"]["personalization"], verbose)
+        story = await run_questions_pipeline(story, configuration["organizations"]["questions"], verbose)
     elif pipeline == "PERSONALIZATION":
-        story = run_personalization_pipeline(story, preferences, configuration["organizations"]["personalization"], verbose)
+        story = await run_personalization_pipeline(story, preferences, configuration["organizations"]["personalization"], verbose)
     elif pipeline == "QUESTIONS":
-        story = run_questions_pipeline(story, configuration["organizations"]["questions"], verbose)
+        story = await run_questions_pipeline(story, configuration["organizations"]["questions"], verbose)
     elif pipeline == "SINGLE":
-        story = run_combined_pipeline(story, preferences, configuration["organizations"]["combined"], verbose)
+        story = await run_combined_pipeline(story, preferences, configuration["organizations"]["combined"], verbose)
 
     return story
