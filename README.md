@@ -118,7 +118,7 @@ python scripts/main.py \
 
 ### Arguments
 
-- `--story_path` (required): Path to the Markdown file containing the story
+- `--story_path` (required): Path to the directory containing the a file named `story.md`
 - `--preferences_path` (required): Path to the Markdown file containing user preferences
 - `--output_path` (optional): Output file path (default: `output.md`)
 - `--pipelines` (optional): Which pipeline(s) to run:
@@ -154,10 +154,11 @@ Preferences should be in Markdown format:
 You can also use the system programmatically:
 
 ```python
-from src.main import run_pipelines
-from src.domain.services.book_parser import BookParser
-from src.domain.services.preference_parser import PreferenceParser
-from src.utils import load_md_file
+from shared_reading_mas import run_pipelines
+from shared_reading_mas.domain.services.book_parser import BookParser
+from shared_reading_mas.domain.services.preference_parser import PreferenceParser
+from shared_reading_mas.utils import load_md_file
+from shared_reading_mas.domain.services.book_renderer import BookMarkdownRenderer
 
 # Load and parse inputs
 story_str = load_md_file("data/fox.md")
@@ -175,7 +176,6 @@ modified_story = run_pipelines(
 )
 
 # Render output
-from src.domain.services.book_renderer import BookMarkdownRenderer
 output = BookMarkdownRenderer().render(modified_story)
 print(output)
 ```
@@ -183,26 +183,43 @@ print(output)
 ## Project Structure
 
 ```bash
-.
+shared-reading-mas/
+│
+├── pyproject.toml
+├── README.md
+├── .gitignore
+│
 ├── src/
-│   ├── agents/              # Agent implementations
-│   │   ├── core/           # Base agent classes and utilities
-│   │   ├── personalization/ # Personalization agents
-│   │   └── questions/      # Question generation agents
-│   ├── domain/             # Domain models and services
-│   │   ├── book_aggregate/ # Book domain model
-│   │   ├── evaluation_aggregate/ # Evaluation domain model
-│   │   ├── preference_aggregate/ # Preference domain model
-│   │   └── services/       # Domain services (parsers, renderers)
-│   ├── roles/              # Role definitions
-│   │   ├── core/          # Base role classes
-│   │   ├── personalization/ # Personalization roles
-│   │   └── questions/     # Question generation roles
-│   ├── main.py            # Main entry point
-│   └── utils.py           # Utility functions
-├── data/                  # Sample data files
-├── pyproject.toml         # Project configuration
-└── README.md             # This file
+│   └── shared_reading_mas/        
+│       ├── __init__.py
+│       │
+│       ├── agents/
+│       │   ├── core/
+│       │   ├── personalization/
+│       │   └── questions/
+│       │
+│       ├── domain/
+│       │   ├── book_aggregate/
+│       │   ├── evaluation_aggregate/
+│       │   ├── preference_aggregate/
+│       │   └── services/
+│       │
+│       ├── roles/
+│       │   ├── core/
+│       │   ├── personalization/
+│       │   └── questions/
+│       │
+│       ├── core.py                
+│       ├── utils.py
+│       ├── cli.py                 
+│       └── main.py (optional)     
+│
+├── scripts/                       
+│   ├── run_pipeline.py
+│   ├── eval.py
+│   └── debug.py
+│
+└── data/
 ```
 
 ## Components
