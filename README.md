@@ -108,8 +108,8 @@ LANGFUSE_HOST=https://cloud.langfuse.com
 The main entry point provides a command-line interface for running the pipelines:
 
 ```bash
-python -m src.main \
-    --story_path path/to/story.md \
+python scripts/main.py \
+    --story_path path/to/story \
     --preferences_path path/to/profile.md \
     --output_path output.md \
     --pipelines ALL \

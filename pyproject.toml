@@ -1,11 +1,11 @@
 [project]
-name = "sistema"
+name = "shared-reading-mas"
 version = "0.1.0"
-description = "Add your description here"
+description = "A multi-agent system (MAS) built with LangGraph and LangChain that personalizes children's stories and generates educational questions."
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
-    "dotenv>=0.9.9",
+    "python-dotenv>=1.0.0",
     "langchain>=1.1.0",
     "langchain-google-genai>=4.2.1",
     "langchain-ollama>=1.0.0",
@@ -18,17 +18,29 @@ dependencies = [
     "matplotlib>=3.10.8",
     "openai>=2.8.1",
     "pandas>=3.0.0",
-    "pre-commit>=4.5.0",
     "psutil>=7.2.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit>=4.5.0",
     "ruff>=0.14.7",
     "ruff-lsp>=0.0.62",
 ]
 
+[project.scripts]
+shared-reading = "shared_reading_mas.cli:main"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+# ------------------------------
+# Ruff
+# ------------------------------
 [tool.ruff]
 select = ["E", "F", "W", "I"]
-ignore = ["E501"]  # Let formatter handle line length
-
-# Linter-wide line length (formatter does NOT use this value)
+ignore = ["E501"]
 line-length = 88
 
 exclude = [
@@ -43,7 +55,6 @@ exclude = [
 
 target-version = "py311"
 
-
 # ------------------------------
 # Ruff Formatter
 # ------------------------------
@@ -52,8 +63,7 @@ indent-style = "space"
 quote-style = "double"
 skip-magic-trailing-comma = false
 docstring-code-format = true
-docstring-code-line-length = "dynamic"  # or a number like 72
-
+docstring-code-line-length = "dynamic"
 
 # ------------------------------
 # Per-file overrides
