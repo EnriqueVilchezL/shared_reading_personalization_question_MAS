@@ -1,65 +1,134 @@
 {
-    "organizations": {
-        "personalization": {
-            "num_generations": 3,
-            "evaluation_mode": "combination",
-            "num_evaluations": 0,
-            "temperatures": [0.90, 1.10],
-            "agents":
-            {
-                "personalizer": {
-                    "base_provider": "ollama",
-                    "base_model": "gpt-oss:120b",
-                    "base_url": "http://localhost:11434",
-                    "temperature": 1,
-                    "reasoning": false
-                },
-                "pair_critic": {
-                    "base_provider": "ollama",
-                    "base_model": "gpt-oss:120b",
-                    "base_url": "http://localhost:11434",
-                    "temperature": 0.1,
-                    "reasoning": true
-                },
-                "edition_critic": {
-                    "base_provider": "ollama",
-                    "base_model": "gpt-oss:120b",
-                    "base_url": "http://localhost:11434",
-                    "temperature": 0.5,
-                    "reasoning": true
+    "cloud": {
+        "organizations": {
+            "personalization": {
+                "num_generations": 2,
+                "evaluation_mode": "combination",
+                "num_evaluations": 0,
+                "temperatures": [0.90, 1.10],
+                "agents":
+                {
+                    "personalizer": {
+                        "base_provider": "openrouter",
+                        "base_model": "google/gemini-3-flash-preview",
+                        "temperature": 1
+                    },
+                    "pair_critic": {
+                        "base_provider": "openrouter",
+                        "base_model": "google/gemini-3.1-pro-preview",
+                        "temperature": 1
+                    },
+                    "edition_critic": {
+                        "base_provider": "openrouter",
+                        "base_model": "google/gemini-3.1-pro-preview",
+                        "temperature": 1
+                    },
+                    "image_editor": {
+                        "base_provider": "openrouter",
+                        "base_model": "google/gemini-3.1-pro-preview",
+                        "temperature": 1
+                    },
+                    "image_editing_service": {
+                        "base_provider": "openrouter",
+                        "base_model": "google/gemini-3-pro-image-preview"
+                    }
+                }
+            },
+            "questions": {
+                "agents":
+                {
+                    "extractor": {
+                        "base_provider": "openrouter",
+                        "base_model": "google/gemini-3.1-pro-preview",
+                        "temperature": 1
+                    },
+                    "questioner": {
+                        "base_provider": "openrouter",
+                        "base_model": "google/gemini-3-flash-preview",
+                        "temperature": 1
+                    },
+                    "aggregator": {
+                        "base_provider": "openrouter",
+                        "base_model": "google/gemini-3.1-pro-preview",
+                        "temperature": 1
+                    }
+                }
+            },
+            "combined": {
+                "agents":
+                {
+                    "combined": {
+                        "base_provider": "openrouter",
+                        "base_model": "google/gemini-3-flash-preview",
+                        "temperature": 1
+                    }
                 }
             }
-        },
-        "questions": {
-            "agents":
-            {
-                "extractor": {
-                    "base_provider": "ollama",
-                    "base_model": "gpt-oss:120b",
-                    "base_url": "http://localhost:11434",
-                    "temperature": 1,
-                    "reasoning": true
-                },
-                "questioner": {
-                    "base_provider": "ollama",
-                    "base_model": "gpt-oss:120b",
-                    "base_url": "http://localhost:11434",
-                    "temperature": 1,
-                    "reasoning": true
-                },
-                "aggregator": {
-                    "base_provider": "ollama",
-                    "base_model": "gpt-oss:120b",
-                    "base_url": "http://localhost:11434",
-                    "temperature": 0.1,
-                    "reasoning": true
-                },
-                "edition_critic": {
-                    "base_provider": "ollama",
-                    "base_model": "gpt-oss:120b",
-                    "base_url": "http://localhost:11434",
-                    "temperature": 0.1,
-                    "reasoning": true
+        }
+    },
+    "local": {
+        "organizations": {
+            "personalization": {
+                "num_generations": 3,
+                "evaluation_mode": "combination",
+                "num_evaluations": 0,
+                "temperatures": [0.90, 1.10],
+                "agents":
+                {
+                    "personalizer": {
+                        "base_provider": "ollama",
+                        "base_model": "gpt-oss:120b",
+                        "base_url": "http://localhost:11434",
+                        "temperature": 1,
+                        "reasoning": false
+                    },
+                    "pair_critic": {
+                        "base_provider": "ollama",
+                        "base_model": "gpt-oss:120b",
+                        "base_url": "http://localhost:11434",
+                        "temperature": 0.1,
+                        "reasoning": true
+                    },
+                    "edition_critic": {
+                        "base_provider": "ollama",
+                        "base_model": "gpt-oss:120b",
+                        "base_url": "http://localhost:11434",
+                        "temperature": 0.5,
+                        "reasoning": true
+                    }
+                }
+            },
+            "questions": {
+                "agents":
+                {
+                    "extractor": {
+                        "base_provider": "ollama",
+                        "base_model": "gpt-oss:120b",
+                        "base_url": "http://localhost:11434",
+                        "temperature": 1,
+                        "reasoning": true
+                    },
+                    "questioner": {
+                        "base_provider": "ollama",
+                        "base_model": "gpt-oss:120b",
+                        "base_url": "http://localhost:11434",
+                        "temperature": 1,
+                        "reasoning": true
+                    },
+                    "aggregator": {
+                        "base_provider": "ollama",
+                        "base_model": "gpt-oss:120b",
+                        "base_url": "http://localhost:11434",
+                        "temperature": 0.1,
+                        "reasoning": true
+                    },
+                    "edition_critic": {
+                        "base_provider": "ollama",
+                        "base_model": "gpt-oss:120b",
+                        "base_url": "http://localhost:11434",
+                        "temperature": 0.1,
+                        "reasoning": true
+                    }
                 }
             }
         }

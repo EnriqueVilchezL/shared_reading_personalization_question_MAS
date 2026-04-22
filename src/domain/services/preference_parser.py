@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from lark import Lark, Transformer
 
 from domain.preference_aggregate.preference import Preference
@@ -49,10 +51,14 @@ class PreferenceParser:
         %ignore " "
     """
 
-    def __init__(self):
+    def __init__(self, from_path: Path | None = None):
         self._lark = Lark(self._GRAMMAR, parser="earley")
         self._transformer = PreferenceTransformer()
+        self.from_path = from_path
 
-    def parse(self, text: str) -> list[Preference]:
+    def parse(self, text: str | None = None) -> list[Preference]:
+        if not text and self.from_path:
+            text = self.from_path.read_text(encoding="utf-8")
+
         tree = self._lark.parse(text)
         return self._transformer.transform(tree)

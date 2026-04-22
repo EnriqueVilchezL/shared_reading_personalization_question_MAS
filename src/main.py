@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -160,7 +161,7 @@ def run_pipelines(
         story = run_questions_pipeline(story, configuration["organizations"]["questions"], verbose)
     elif pipeline == "SINGLE":
         story = run_combined_pipeline(story, preferences, configuration["organizations"]["combined"], verbose)
-    
+
     return story
 
 
@@ -188,14 +189,15 @@ def main():
 
     args = parser.parse_args()
 
-    story_str = load_md_file(args.story_path)
-    preferences_str = load_md_file(args.preferences_path)
-    configuration = load_json_file("config_cloud.json")
+    story_path = Path(args.story_path)
+    profile_path = Path(args.preferences_path)
+    output_path = Path(args.output_path)
+    configuration = load_json_file("config.json")["cloud"]
 
-    story = BookParser().parse(story_str)
-    preferences = PreferenceParser().parse(preferences_str)
+    story = BookParser(from_path=story_path).parse()
+    preferences = PreferenceParser(from_path=profile_path).parse()
     modified_story = run_pipelines(story, preferences, args.pipelines, configuration, args.verbose)
 
-    write_to_md_file(args.output_path, BookMarkdownRenderer().render(modified_story))
+    BookMarkdownRenderer(to_path=output_path, include_images=True).render(modified_story)
 
 main()

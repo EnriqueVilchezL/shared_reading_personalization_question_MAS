@@ -1,4 +1,5 @@
 import base64
+from pathlib import Path
 from typing import List, Union
 
 from lark import Lark, Transformer
@@ -15,6 +16,8 @@ class BookDomainTransformer(Transformer):
     Transforms the Lark syntax tree into Domain Objects.
     Merges lines into paragraphs but preserves the inner newlines.
     """
+
+    from_path: Path | None = None
 
     def TEXT(self, token):
         """Returns the string. We do not strip here to preserve potential spacing."""
@@ -63,9 +66,16 @@ class BookDomainTransformer(Transformer):
     def image_entry(self, items) -> Image:
         raw = str(items[0]).strip()
         try:
-            parts = raw.split("]:(")
+            parts = raw.split("](")
             caption = parts[0].replace("![", "", 1).strip()
             url = parts[1].rstrip(")").strip()
+
+            print(f"Url: {url}, Caption: {caption}")
+
+            if self.from_path and not url.startswith(("http://", "https://")):
+                url = (self.from_path / url).resolve()
+
+            print()
             with open(url, "rb") as f:
                 data = base64.b64encode(f.read()).decode("utf-8")
 
@@ -130,7 +140,7 @@ class BookParser:
         text_block: (TEXT | PARA_SEP)+
         image_entry: IMAGE_LINE
 
-        IMAGE_LINE: /!\[.*?\]:\([^)]+\)/
+        IMAGE_LINE.2: /!\[.*?\]\([^)]+\)/
         SEP.2: "---"
 
         TEXT.1: /[^\n]+/
@@ -143,10 +153,14 @@ class BookParser:
         %ignore /\n/
     """
 
-    def __init__(self):
+    def __init__(self, from_path: Path | None = None):
         self._lark = Lark(self._GRAMMAR, parser="lalr")
         self._transformer = BookDomainTransformer()
+        self._transformer.from_path = from_path
 
-    def parse(self, text: str) -> Book:
+    def parse(self, text: str | None = None) -> Book:
+        if not text and self._transformer.from_path:
+            text = (self._transformer.from_path / "story.md").read_text(encoding="utf-8")
+
         tree = self._lark.parse(text)
         return self._transformer.transform(tree)

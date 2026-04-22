@@ -10,4 +10,4 @@ class LangFuseOrganization(Organization):
         super().__init__(
             name=name, information_schema=information_schema, configuration=configuration
         )
-        self.configuration['callbacks'] = [CallbackHandler()]
+        self.configuration['callbacks'] = []#[CallbackHandler()]

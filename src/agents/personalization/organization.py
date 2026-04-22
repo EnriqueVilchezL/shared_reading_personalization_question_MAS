@@ -112,7 +112,7 @@ class Organization(LangFuseOrganization):
             "cumple parcialmente" in last_evaluation.label.lower()
             or "no cumple" in last_evaluation.label.lower()
         ):
-            return END
+            return "image_editor"
 
         else:
             return "personalizer_editor"
@@ -171,15 +171,17 @@ class Organization(LangFuseOrganization):
 
         self._wire_collector_to_critics(critic_names)
         self._add_post_evaluation_pipeline(agents_config)
+        self._add_image_editing_pipeline(agents_config)
 
         return self._core_graph.compile()
 
     def _add_image_editing_pipeline(self, agents_config):
         # Image editor
         editor_config = LMConfiguration.model_validate(agents_config["image_editor"])
+        editing_service_config = LMConfiguration.model_validate(agents_config["image_editing_service"])
 
         image_editing_service = image_editor_factory(
-            editor=editor_config["base_provider"], configuration=editor_config
+            editor=editing_service_config.base_provider, configuration=editing_service_config.model_dump()
         )
         image_editor = ImageEditorAgent(image_editing_service, editor_config)
         image_editor.name = "image_editor"
