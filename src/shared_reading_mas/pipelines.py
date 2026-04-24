@@ -148,13 +148,15 @@ async def run_pipelines(
         Book: The processed version of the story.
     """
 
+    lower_pipelines = [pipeline.lower() for pipeline in pipelines]
+
     # Order pipelines
     priority = {"personalization": 0, "questions": 1, "narration": 2, "single": 3}
 
-    sorted_pipelines = sorted(pipelines, key=lambda x: priority[x])
+    sorted_pipelines = sorted(lower_pipelines, key=lambda x: priority[x])
 
     for pipeline in sorted_pipelines:
-        match pipeline.lower():
+        match pipeline:
             case "personalization":
                 story = await run_personalization_pipeline(story, preferences, configuration["organizations"]["personalization"], verbose)
             case "questions":
