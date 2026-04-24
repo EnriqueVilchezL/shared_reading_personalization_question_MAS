@@ -11,26 +11,41 @@
                     "personalizer": {
                         "base_provider": "openrouter",
                         "base_model": "google/gemini-3-flash-preview",
-                        "temperature": 1
+                        "temperature": 1,
+                        "additional_params": {
+                            "openrouter_provider": ["google-ai-studio", "google-vertex"]
+                        }
                     },
                     "pair_critic": {
                         "base_provider": "openrouter",
                         "base_model": "google/gemini-3.1-pro-preview",
-                        "temperature": 1
+                        "temperature": 1,
+                        "additional_params": {
+                            "openrouter_provider": ["google-ai-studio", "google-vertex"]
+                        }
                     },
                     "edition_critic": {
                         "base_provider": "openrouter",
                         "base_model": "google/gemini-3.1-pro-preview",
-                        "temperature": 1
+                        "temperature": 1,
+                        "additional_params": {
+                            "openrouter_provider": ["google-ai-studio", "google-vertex"]
+                        }
                     },
                     "image_editor": {
                         "base_provider": "openrouter",
-                        "base_model": "google/gemini-3.1-pro-preview",
-                        "temperature": 1
+                        "base_model": "google/gemini-3-flash-preview",
+                        "temperature": 1,
+                        "additional_params": {
+                            "openrouter_provider": ["google-ai-studio", "google-vertex"]
+                        }
                     },
                     "image_editing_service": {
                         "base_provider": "openrouter",
-                        "base_model": "google/gemini-3-pro-image-preview"
+                        "base_model": "google/gemini-3-pro-image-preview",
+                        "additional_params": {
+                            "openrouter_provider": ["google-ai-studio", "google-vertex"]
+                        }
                     }
                 }
             },

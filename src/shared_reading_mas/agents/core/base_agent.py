@@ -50,7 +50,11 @@ def get_llm(lm_config: LMConfiguration):
         model = ChatOpenRouter(
             model=lm_config.base_model,
             temperature=lm_config.temperature,
-            max_retries=3
+            max_retries=3,
+            openrouter_provider={
+                "order": lm_config.aditional_params.get("openrouter_provider"),
+                "allow_fallbacks": False,
+            }
         )
 
 

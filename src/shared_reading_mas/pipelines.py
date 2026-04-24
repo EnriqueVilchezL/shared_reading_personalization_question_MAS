@@ -132,7 +132,7 @@ async def run_combined_pipeline(
     return final_state["modified_book"]
 
 async def run_pipelines(
-    story: Book, preferences: list[Preference], pipeline: str, configuration: dict = {},verbose: bool = False
+    story: Book, preferences: list[Preference], pipelines: list[str], configuration: dict = {},verbose: bool = False
 ) -> Book:
     """
     Runs the specified pipelines on a given story with user preferences.
@@ -140,21 +140,30 @@ async def run_pipelines(
     Args:
         story (Book): The original story to be processed.
         preferences (list[Preference]): The user reading preferences.
-        pipeline (str): The pipeline to run. It can be "ALL", "PERSONALIZATION", or "QUESTIONS".
+        pipelines (list[str]): The pipelines to run. It can be "PERSONALIZATION", "QUESTIONS", "NARRATION" or "SINGLE".
         configuration (dict): Configuration for the organizations.
         verbose (bool): If True, prints detailed output during the process.
 
     Returns:
         Book: The processed version of the story.
     """
-    if pipeline == "ALL":
-        story = await run_personalization_pipeline(story, preferences, configuration["organizations"]["personalization"], verbose)
-        story = await run_questions_pipeline(story, configuration["organizations"]["questions"], verbose)
-    elif pipeline == "PERSONALIZATION":
-        story = await run_personalization_pipeline(story, preferences, configuration["organizations"]["personalization"], verbose)
-    elif pipeline == "QUESTIONS":
-        story = await run_questions_pipeline(story, configuration["organizations"]["questions"], verbose)
-    elif pipeline == "SINGLE":
-        story = await run_combined_pipeline(story, preferences, configuration["organizations"]["combined"], verbose)
+
+    # Order pipelines
+    priority = {"personalization": 0, "questions": 1, "narration": 2, "single": 3}
+
+    sorted_pipelines = sorted(pipelines, key=lambda x: priority[x])
+
+    for pipeline in sorted_pipelines:
+        match pipeline.lower():
+            case "personalization":
+                story = await run_personalization_pipeline(story, preferences, configuration["organizations"]["personalization"], verbose)
+            case "questions":
+                story = await run_questions_pipeline(story, configuration["organizations"]["questions"], verbose)
+            case "narration":
+                continue
+            case "single":
+                story = await run_combined_pipeline(story, preferences, configuration["organizations"]["combined"], verbose)
+            case _:
+                raise ValueError(f"Unknown pipeline: {pipeline}")
 
     return story

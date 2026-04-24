@@ -61,6 +61,8 @@ class PersonalizerAgent(Agent):
     def post_core(self, data: dict) -> dict:
         super().post_core(data)
         last_message = data.get("messages", [])[-1].content
+
+        print("Personalizer Response:", last_message)
         personalized_book = BookParser().parse(last_message)
 
         if isinstance(self.roles.get_active_role(), PersonalizerEditorRole):

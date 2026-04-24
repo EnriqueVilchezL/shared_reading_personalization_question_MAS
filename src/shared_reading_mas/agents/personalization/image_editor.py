@@ -84,7 +84,7 @@ class ImageEditorAgent(Agent):
 
         tasks = []
 
-        with ThreadPoolExecutor(max_workers=6) as executor:
+        with ThreadPoolExecutor(max_workers=2) as executor:
             for i, (original_page, modified_page, editing_request_page) in enumerate(
                 zip(
                     data.get("original_book", []).pages,

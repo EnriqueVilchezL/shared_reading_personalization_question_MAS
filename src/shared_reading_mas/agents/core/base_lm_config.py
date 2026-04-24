@@ -36,3 +36,8 @@ class LMConfiguration(BaseModel):
         description="API key for authenticating with the language model provider, if required."
     )
 
+    aditional_params: dict = Field(
+        default_factory=dict,
+        description="Additional parameters to pass to the language model provider's API."
+    )
+
