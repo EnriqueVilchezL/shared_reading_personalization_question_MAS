@@ -47,6 +47,13 @@ def get_llm(lm_config: LMConfiguration):
     elif lm_config.base_provider == "openrouter":
         from langchain_openrouter import ChatOpenRouter
 
+        reasoning_dict = None
+        if lm_config.reasoning:
+            reasoning_dict = {
+                "effort": "medium",
+                "summary": "auto"
+            }
+
         model = ChatOpenRouter(
             model=lm_config.base_model,
             temperature=lm_config.temperature,
@@ -54,7 +61,8 @@ def get_llm(lm_config: LMConfiguration):
             openrouter_provider={
                 "order": lm_config.aditional_params.get("openrouter_provider"),
                 "allow_fallbacks": False,
-            }
+            },
+            reasoning=reasoning_dict
         )
 
 
