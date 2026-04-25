@@ -104,7 +104,7 @@ class BookDomainTransformer(Transformer):
     def header(self, items):
         header_data = {"title": "Untitled", "front_page_image": None}
         for item in items:
-            if isinstance(item, str):
+            if isinstance(item, str) and header_data["title"] == "Untitled":
                 header_data["title"] = item
             elif isinstance(item, Image):
                 header_data["front_page_image"] = item
@@ -131,7 +131,7 @@ class BookParser:
     _GRAMMAR = r"""
         start: header? page_block+
 
-        header: title_line?  PARA_SEP? front_image? PARA_SEP?
+        header: title_line? PARA_SEP? front_image? PARA_SEP?
         title_line: "#" TEXT
         front_image: image_entry
 
