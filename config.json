@@ -22,7 +22,8 @@
                         "temperature": 1,
                         "additional_params": {
                             "openrouter_provider": ["google-ai-studio", "google-vertex"]
-                        }
+                        },
+                        "reasoning": true
                     },
                     "edition_critic": {
                         "base_provider": "openrouter",
@@ -30,7 +31,8 @@
                         "temperature": 1,
                         "additional_params": {
                             "openrouter_provider": ["google-ai-studio", "google-vertex"]
-                        }
+                        },
+                        "reasoning": true
                     },
                     "image_editor": {
                         "base_provider": "openrouter",

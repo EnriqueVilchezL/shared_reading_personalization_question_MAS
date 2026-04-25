@@ -147,6 +147,8 @@ async def run_pipelines(
     Returns:
         Book: The processed version of the story.
     """
+    if issubclass(type(pipelines), str):
+        pipelines = [pipelines]
 
     lower_pipelines = [pipeline.lower() for pipeline in pipelines]
 
