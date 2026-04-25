@@ -47,5 +47,4 @@ class CompletionRefinerAgent(Agent):
         book = parser.parse(last_message)
         book.title = next(iter(self.roles)).prompt.type
 
-        print(f"Refined book: {book.title}")
         return {"questions_books": [book]}

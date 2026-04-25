@@ -42,8 +42,6 @@ class EditionCriticAgent(Agent):
         super().post_core(data)
 
         last_message = data["messages"][-1].content
-        print("Edition Critic Evaluation:", last_message)
-
         return_dict = {}
 
         evaluation = EvaluationParser().parse(last_message)
