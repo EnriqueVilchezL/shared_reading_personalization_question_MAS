@@ -26,8 +26,9 @@ def main():
     parser.add_argument(
         "--pipelines",
         help="The pipelines to run",
-        choices=["ALL", "PERSONALIZATION", "QUESTIONS", "SINGLE"],
-        default="ALL",
+        choices=["PERSONALIZATION", "QUESTIONS", "SINGLE"],
+        default=["ALL"],
+        nargs="+",
         type=str.upper,
     )
     parser.add_argument(
@@ -43,6 +44,7 @@ def main():
 
     story = BookParser(from_path=story_path).parse()
     preferences = PreferenceParser(from_path=profile_path).parse()
+
     modified_story = asyncio.run(run_pipelines(story, preferences, args.pipelines, configuration, args.verbose))
 
     BookMarkdownRenderer(to_path=output_path, include_images=True).render(modified_story)

@@ -131,7 +131,7 @@ class BookParser:
     _GRAMMAR = r"""
         start: header? page_block+
 
-        header: title_line? front_image?
+        header: title_line?  PARA_SEP? front_image? PARA_SEP?
         title_line: "#" TEXT
         front_image: image_entry
 

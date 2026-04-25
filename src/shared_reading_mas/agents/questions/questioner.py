@@ -5,6 +5,7 @@ from langchain.messages import HumanMessage
 from shared_reading_mas.agents.core.base_agent import Agent
 from shared_reading_mas.agents.core.base_lm_config import LMConfiguration
 from shared_reading_mas.agents.personalization.information import Information
+from shared_reading_mas.domain.book_aggregate.book import Book
 from shared_reading_mas.domain.book_aggregate.content import Content, ContentType
 from shared_reading_mas.domain.services.book_parser import BookParser
 from shared_reading_mas.domain.services.book_renderer import BookMarkdownRenderer
@@ -29,24 +30,46 @@ class QuestionerAgent(Agent):
         name: str,
         roles: list[Role] | RoleCollection | None = None,
         lm_config: LMConfiguration | None = None,
+        uses_images: bool = False,
     ):
         super().__init__(
             name=name, roles=roles, lm_config=lm_config, information_schema=Information
         )
+        self.uses_images = uses_images
 
     def pre_core(self, data: dict) -> dict:
         super().pre_core(data)
         last_message = data.get("messages", [])[-1].content
         renderer = BookMarkdownRenderer()
 
-        request = HumanMessage(
-            "Porfavor, genera para el siguiente cuento:\n\n"
-            + renderer.render(data.get("original_book", ""))
-            + "\n\n**Debes usar este análisis del cuento original, para las preguntas**:\n"
-            + last_message
-        )
+        original_book = data.get("original_book")
+
+        contents = [{"type": "text", "text": f"Porfavor, genera para el siguiente cuento:\n\n{renderer.render(original_book)}"}]
+
+        if self.uses_images:
+            contents.extend(self._create_images_messages(original_book))
+
+        contents.append({"type": "text", "text": f"\n**Debes usar este análisis del cuento original, para las preguntas**:\n{last_message}"})
+        request = HumanMessage(content=contents)
 
         return {"messages": [request]}
+
+    def _create_images_messages(self, book: Book) -> list[HumanMessage]:
+        images_parts = []
+
+        for i, page in enumerate(book.pages):
+            for image in page.images:
+                images_parts.extend(
+                    [
+                        {"type": "text", "text": f"\nImágen de **Página {i + 1}**:\n"},
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:image/png;base64,{image.data}"},
+                        },
+                    ]
+                )
+
+        return images_parts
 
     def post_core(self, data: dict) -> dict:
         super().post_core(data)
@@ -109,6 +132,7 @@ class OpenEndedQuestionerAgent(QuestionerAgent):
             name="open_ended_questioner",
             roles=[OpenEndedQuestionerRole()],
             lm_config=lm_config,
+            uses_images=True
         )
 
 
@@ -125,6 +149,7 @@ class WhQuestionerAgent(QuestionerAgent):
             name="wh_questioner",
             roles=[WhQuestionerRole()],
             lm_config=lm_config,
+            uses_images=True
         )
 
 

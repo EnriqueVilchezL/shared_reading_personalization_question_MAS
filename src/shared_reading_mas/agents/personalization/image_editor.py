@@ -36,6 +36,15 @@ class ImageEditorAgent(Agent):
 
     def _create_images_messages(self, book: Book) -> list[HumanMessage]:
         images_parts = []
+
+        images_parts.extend([
+            {"type": "text", "text": "\nImágen de **Portada**:\n"},
+            {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/png;base64,{book.front_page_image.data}"},
+            }
+        ])
+
         for i, page in enumerate(book.pages):
             for image in page.images:
                 images_parts.extend(
@@ -77,41 +86,64 @@ class ImageEditorAgent(Agent):
 
         return {"messages": request}
 
-    def post_core(self, data: dict) -> dict:
-        super().post_core(data)
-        last_message = data.get("messages", [])[-1].content
-        editing_requests = BookParser().parse(last_message)
 
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    def generate_images(self, data, editing_requests):
         tasks = []
+        original_images = [data.get("original_book", "").front_page_image] + [
+            image for page in data.get("original_book", "").pages for image in page.images
+        ]
 
-        with ThreadPoolExecutor(max_workers=2) as executor:
-            for i, (original_page, modified_page, editing_request_page) in enumerate(
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            for i, (original_image, editing_request_page) in enumerate(
                 zip(
-                    data.get("original_book", []).pages,
-                    data.get("modified_book", []).pages,
+                    original_images,
                     editing_requests.pages,
                 )
             ):
                 parsed_request = editing_request_page.contents[0].text
 
-                for image in original_page.images:
-                    pil_image = base64_to_pil(image.data)
-                    future = executor.submit(
-                        self.base_image_editor.edit_image, pil_image, parsed_request, "512x512"
-                    )
+                pil_image = base64_to_pil(original_image.data)
 
-                    tasks.append((future, i))
+                future = executor.submit(
+                    self.base_image_editor.edit_image,
+                    pil_image,
+                    parsed_request,
+                    "512x512",
+                )
 
-            for future, i in tasks:
-                edited_image = future.result()
-                book = data.get("modified_book", "")
-                modified_page = book.pages[i]
+                tasks.append((future, i))
+
+            return tasks
+
+    def apply_images(self, data, tasks):
+        book = data.get("modified_book", "")
+
+        for future, i in tasks:
+            edited_image = future.result()
+
+            if i == 0:
+                book.front_page_image = Image(
+                    data=pil_to_base64(edited_image),
+                    caption="Imágen de Portada",
+                )
+            else:
+                modified_page = book.pages[i - 1]
 
                 modified_page.images.append(
                     Image(
                         data=pil_to_base64(edited_image),
-                        caption=f"Imágen de Página {i + 1}",
+                        caption=f"Imágen de Página {i}",
                     )
                 )
+
+    def post_core(self, data: dict) -> dict:
+        super().post_core(data)
+        last_message = data.get("messages", [])[-1].content
+        editing_requests = BookParser().parse(last_message)
+
+        tasks = self.generate_images(data, editing_requests)
+        self.apply_images(data, tasks)
 
         return {"modified_book": data.get("modified_book", "")}

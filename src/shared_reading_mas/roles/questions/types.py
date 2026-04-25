@@ -33,14 +33,15 @@ DISTANCING_TYPE = Category(
 
 OPEN_ENDED_TYPE = Category(
     type="O: Open-ended Questions",
-    description="**Questions** that allow multiple possible responses and encourage the child to describe, interpret, or elaborate on the story.",
+    description="Questions focused on the story's images that allow multiple possible responses and encourage the child to observe, interpret, and describe what is happening visually in the scenes.",
     indicators=[
-        "The questions do not have a single correct answer.",
-        "The expected response is longer than one word.",
-        "The questions invite description of actions, scenes, or characters.",
-        "The child is encouraged to elaborate or expand on their ideas.",
-        "The cognitive demand involves interpretation or explanation rather than simple recall.",
-        "Example: Why do you think the fox made that decision?",
+        "The questions are grounded in the images and visual elements of the story.",
+        "There is no single correct answer.",
+        "The expected response goes beyond one word and may include detailed description.",
+        "The questions prompt the child to describe what they see in the images (actions, characters, settings, expressions, or events).",
+        "The child is encouraged to interpret visual cues and expand on what is depicted.",
+        "The cognitive demand focuses on interpretation and explanation of images rather than simple recall.",
+        "Example: What is the dog doing in the image?",
     ],
     importance=None,
 )
@@ -64,15 +65,15 @@ RECALL_TYPE = Category(
 
 WH_TYPE = Category(
     type="W: Wh-questions",
-    description="**Questions** framed as who, what, where, when, why, or how questions that target specific elements of the story.",
+    description="**Questions** framed as who, what, where, when, why, or how questions that target specific elements of the story's **images (visual content)**.",
     indicators=[
         "The questions begin with who, what, where, when, why, or how.",
-        "The expected response identifies characters, settings, actions, or reasons.",
-        "The questions direct attention to explicit information in the text.",
-        "The questions reinforce vocabulary from the story.",
-        "**These questions must not require the child to make inferences, interpretations, or confusing connections. The answer should be explicitly stated in the story**.",
-        "The cognitive demand focuses on comprehension of specific story elements.",
-        "Example: Why did the farmer wake up early?",
+        "The expected response identifies characters, settings, actions, or reasons as shown in the images.",
+        "The questions direct attention to explicit information in the text and the **visual images in the story**.",
+        "The questions reinforce vocabulary from the story",
+        "**These questions must not require the child to make inferences, interpretations, or confusing connections. The answer should be explicitly stated in the story or clearly visible in the images.**",
+        "The cognitive demand focuses on comprehension of specific story elements presented in both text and images.",
+        "Example: What is the kid holding?",
     ],
     importance=None,
 )
