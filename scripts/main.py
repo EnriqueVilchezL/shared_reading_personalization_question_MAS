@@ -47,6 +47,6 @@ def main():
 
     modified_story = asyncio.run(run_pipelines(story, preferences, args.pipelines, configuration, args.verbose))
 
-    BookMarkdownRenderer(to_path=output_path, include_images=True).render(modified_story)
+    BookMarkdownRenderer(to_path=output_path, include_images=modified_story.has_images()).render(modified_story)
 
 main()

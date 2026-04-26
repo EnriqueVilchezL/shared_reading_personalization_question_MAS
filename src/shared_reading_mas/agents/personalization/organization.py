@@ -19,7 +19,10 @@ from shared_reading_mas.agents.personalization.planner import PlannerAgent
 from shared_reading_mas.domain.book_aggregate.book import Book
 from shared_reading_mas.domain.services.image_editor import image_editor_factory
 from shared_reading_mas.exceptions import OrganizationException
-from shared_reading_mas.roles.personalization.personalizer import PersonalizerEditorRole, PersonalizerRole
+from shared_reading_mas.roles.personalization.personalizer import (
+    PersonalizerEditorRole,
+    PersonalizerRole,
+)
 
 
 class Organization(LangFuseOrganization):
@@ -112,16 +115,13 @@ class Organization(LangFuseOrganization):
             "cumple parcialmente" in last_evaluation.label.lower()
             or "no cumple" in last_evaluation.label.lower()
         ):
-            return "image_editor"
+            return "end_text_personalization"
 
         else:
             return "personalizer_editor"
 
     def collect_books(self, state: dict):
         return {"original_book": state.get("original_book")}
-
-    def end_text_personalization(self, state: dict) -> dict:
-        return {}
 
     def distribute_evaluations(self, state: dict) -> list[Send]:
         """A conditional router that dispatches isolated book pairs to critics."""
@@ -150,6 +150,21 @@ class Organization(LangFuseOrganization):
             (book for book in intermediate_books if str(book.uid) == winning_uid), None
         )
         return {"modified_book": winning_book}
+
+    def end_text_personalization(self, state: dict) -> dict:
+        """Final node of the organization, returns the modified book."""
+        return {"modified_book": state.get("modified_book")}
+
+    def route_images_personalization(self, state: dict) -> dict:
+        """Final node of the organization, returns the modified book."""
+        # Verify if it has images
+        modified_book = state.get("modified_book")
+
+        if modified_book.has_images(include_front_page_image=True):
+            return "image_editor"
+
+        else:
+            return END
 
     @override
     def instantiate(self):
@@ -193,6 +208,7 @@ class Organization(LangFuseOrganization):
     def _add_core_nodes(self):
         self._core_graph.add_node("collector", self.collect_books)
         self._core_graph.add_node("merge_evaluations", self.merge_evaluations)
+        self._core_graph.add_node("end_text_personalization", self.end_text_personalization)
 
     def _add_personalizers(self, personalizer_cfg, num_generations):
         temperatures = self._sample_temperatures(num_generations)
@@ -313,8 +329,17 @@ class Organization(LangFuseOrganization):
             self.route_edition,
             {
                 "personalizer_editor": "personalizer_editor",
-                "image_editor": "image_editor",
+                "end_text_personalization": "end_text_personalization",
             },
         )
 
-        self._core_graph.add_edge("personalizer_editor", "image_editor")
+        self._core_graph.add_conditional_edges(
+            "end_text_personalization",
+            self.route_images_personalization,
+            {
+                "image_editor": "image_editor",
+                END: END,
+            },
+        )
+
+        self._core_graph.add_edge("personalizer_editor", "end_text_personalization")

@@ -39,7 +39,6 @@ class BookMarkdownRenderer:
 
         if self.include_images and book.front_page_image:
             md_output.append(self._render_image(book.front_page_image, name="front"))
-            md_output.append("\n")
 
         for i, page in enumerate(book.pages):
             md_output.append("---")

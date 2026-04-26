@@ -46,7 +46,7 @@ class QuestionerAgent(Agent):
 
         contents = [{"type": "text", "text": f"Porfavor, genera para el siguiente cuento:\n\n{renderer.render(original_book)}"}]
 
-        if self.uses_images:
+        if self.uses_images and original_book.has_images(include_front_page_image=False):
             contents.extend(self._create_images_messages(original_book))
 
         contents.append({"type": "text", "text": f"\n**Debes usar este análisis del cuento original, para las preguntas**:\n{last_message}"})

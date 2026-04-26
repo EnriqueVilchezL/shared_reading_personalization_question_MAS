@@ -57,9 +57,9 @@ class Organization(LangFuseOrganization):
     def instantiate(self):
         agents_config = self.configuration["agents"]
         lm_config = LMConfiguration.model_validate(agents_config["questioner"])
-        completion_agent = CompletionQuestionerAgent(lm_config=lm_config)
+        #completion_agent = CompletionQuestionerAgent(lm_config=lm_config)
 
-        completion_refiner_agent = CompletionRefinerAgent(lm_config=lm_config)
+        #completion_refiner_agent = CompletionRefinerAgent(lm_config=lm_config)
 
         recall_agent = RecallQuestionerAgent(lm_config=lm_config)
 
@@ -79,13 +79,13 @@ class Organization(LangFuseOrganization):
 
         self.add_agents(
             [
-                completion_agent,
+                #completion_agent,
                 recall_agent,
                 open_ended_agent,
                 wh_agent,
                 distancing_agent,
                 aggregator_agent,
-                completion_refiner_agent,
+                #completion_refiner_agent,
                 extractor_agent,
             ]
         )
@@ -94,15 +94,15 @@ class Organization(LangFuseOrganization):
 
         # Entry point
         self._core_graph.add_edge(START, extractor_agent.name)
-        self._core_graph.add_edge(extractor_agent.name, completion_agent.name)
+        #self._core_graph.add_edge(extractor_agent.name, completion_agent.name)
         self._core_graph.add_edge(extractor_agent.name, recall_agent.name)
         self._core_graph.add_edge(extractor_agent.name, open_ended_agent.name)
         self._core_graph.add_edge(extractor_agent.name, wh_agent.name)
         self._core_graph.add_edge(extractor_agent.name, distancing_agent.name)
-        self._core_graph.add_edge(completion_agent.name, completion_refiner_agent.name)
+        #self._core_graph.add_edge(completion_agent.name, completion_refiner_agent.name)
         self._core_graph.add_edge(
             [
-                completion_refiner_agent.name,
+                #completion_refiner_agent.name,
                 recall_agent.name,
                 open_ended_agent.name,
                 wh_agent.name,

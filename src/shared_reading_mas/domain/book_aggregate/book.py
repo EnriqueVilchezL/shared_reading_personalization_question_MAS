@@ -26,3 +26,15 @@ class Book(BaseModel):
 
     def __hash__(self):
         return hash(self.uid)
+
+    def has_images(self, include_front_page_image: bool = False) -> bool:
+        """Checks if the book has any images."""
+        contains_images = True
+        if include_front_page_image and self.front_page_image is None:
+            contains_images = False
+
+        if contains_images:
+            for page in self.pages:
+                contains_images &= len(page.images) > 0\
+
+        return contains_images
