@@ -158,9 +158,9 @@ class Organization(LangFuseOrganization):
     def route_images_personalization(self, state: dict) -> dict:
         """Final node of the organization, returns the modified book."""
         # Verify if it has images
-        modified_book = state.get("modified_book")
+        original_book = state.get("original_book")
 
-        if modified_book.has_images(include_front_page_image=True):
+        if original_book.has_images(include_front_page_image=True):
             return "image_editor"
 
         else:
