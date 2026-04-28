@@ -32,7 +32,7 @@ DISTANCING_TYPE = Category(
 
 OPEN_ENDED_TYPE = Category(
     type="O: Open-ended Questions",
-    description="**Questions** that allow multiple possible responses and encourage the child to describe, interpret, or elaborate on the story. If the story has images, the questions should also encourage the child to describe or interpret the images.",
+    description="**Questions** that allow multiple possible responses and encourage the child to describe, interpret, or elaborate on the story. If the story has images, the questions must preferably encourage the child to describe or interpret the images.",
     indicators=[
         "If the question is about the content of an image and the answer is not in the text, start the question specifying to look at the image.",
         "The questions do not have a single correct answer.",
@@ -64,7 +64,7 @@ RECALL_TYPE = Category(
 
 WH_TYPE = Category(
     type="W: Wh-questions",
-    description="**Questions** framed as who, what, where, when, why, or how questions that target specific elements of the story. If the story has images, the questions should also encourage the child to describe or interpret the images.",
+    description="**Questions** framed as who, what, where, when, why, or how questions that target specific elements of the story. If the story has images, the questions must preferably encourage the child to describe or interpret the images.",
     indicators=[
         "If the question is about the content of an image the answer is not in the text, start the question specifying to look at the image."
         "The questions begin with who, what, where, when, why, or how.",

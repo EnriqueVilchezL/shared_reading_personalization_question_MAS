@@ -24,7 +24,7 @@ class AggregatorRole(LangFuseRole):
         )
 
         criteria_list = [
-            COMPLETION_TYPE,
+            #COMPLETION_TYPE,
             RECALL_TYPE,
             OPEN_ENDED_TYPE,
             WH_TYPE,
