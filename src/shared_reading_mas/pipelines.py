@@ -8,6 +8,8 @@ from shared_reading_mas.agents.questions.organization import (
     Organization as QuestionsOrganization,
 )
 from shared_reading_mas.domain.book_aggregate.book import Book
+from shared_reading_mas.domain.book_aggregate.content import ContentType
+from shared_reading_mas.domain.book_aggregate.page import Page
 from shared_reading_mas.domain.preference_aggregate.preference import Preference
 from shared_reading_mas.domain.services.preference_renderer import (
     PreferenceMarkdownRenderer,
@@ -162,6 +164,14 @@ async def run_pipelines(
             case "personalization":
                 story = await run_personalization_pipeline(story, preferences, configuration["organizations"]["personalization"], verbose)
             case "questions":
+                # Remove questions from the story before running the question pipeline
+                story.pages = [
+                    Page(
+                        contents=[content for content in page.contents if content.type != ContentType.QUESTION],
+                        images=page.images,
+                    )
+                for page in story.pages]
+
                 story = await run_questions_pipeline(story, configuration["organizations"]["questions"], verbose)
             case "narration":
                 continue

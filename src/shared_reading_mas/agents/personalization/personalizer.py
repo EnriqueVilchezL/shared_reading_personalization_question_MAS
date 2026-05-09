@@ -30,7 +30,7 @@ class PersonalizerAgent(Agent):
         )
 
     def pre_core(self, data: dict) -> dict:
-        renderer = BookMarkdownRenderer()
+        renderer = BookMarkdownRenderer(ignore_content_types=["question"])
 
         if isinstance(self.roles.get_active_role(), PersonalizerEditorRole):
             last_evaluation = data["evaluations"][-1]
