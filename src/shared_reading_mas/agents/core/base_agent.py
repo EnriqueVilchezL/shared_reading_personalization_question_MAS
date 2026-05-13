@@ -4,6 +4,7 @@ from typing import override
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import AIMessage
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_ollama import ChatOllama
 from langgraph.graph.state import CompiledStateGraph, StateGraph
 from langgraph_supervisor.handoff import (
@@ -63,6 +64,14 @@ def get_llm(lm_config: LMConfiguration):
                 "allow_fallbacks": False,
             },
             reasoning=reasoning_dict
+        )
+
+    elif lm_config.base_provider == "google":
+        model = ChatGoogleGenerativeAI(
+            model=lm_config.base_model,
+            temperature=lm_config.temperature,
+            max_retries=3,
+            timeout=60,
         )
 
 
