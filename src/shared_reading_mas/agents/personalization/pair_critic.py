@@ -2,7 +2,7 @@ import random
 
 from langchain.messages import HumanMessage
 
-from shared_reading_mas.agents.core.base_agent import Agent
+from shared_reading_mas.agents.core.base_agent import Agent, extract_text
 from shared_reading_mas.agents.core.base_lm_config import LMConfiguration
 from shared_reading_mas.domain.evaluation_aggregate.category import Category
 from shared_reading_mas.domain.evaluation_aggregate.evaluation import Evaluation
@@ -52,7 +52,7 @@ class PairCriticAgent(Agent):
         return {"messages": [message]}
 
     def post_core(self, data: dict) -> dict:
-        last_message = data["messages"][-1].content
+        last_message = extract_text(data["messages"][-1])
 
         lines = last_message.replace("*", "").replace("`", "").splitlines()
 

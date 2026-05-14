@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from langchain.messages import HumanMessage
 
-from shared_reading_mas.agents.core.base_agent import Agent
+from shared_reading_mas.agents.core.base_agent import Agent, extract_text
 from shared_reading_mas.agents.core.base_lm_config import LMConfiguration
 from shared_reading_mas.domain.book_aggregate.book import Book
 from shared_reading_mas.domain.book_aggregate.image import Image
@@ -95,7 +95,7 @@ class ImageEditorAgent(Agent):
             image for page in data.get("original_book", "").pages for image in page.images
         ]
 
-        with ThreadPoolExecutor(max_workers=3) as executor:
+        with ThreadPoolExecutor(max_workers=2) as executor:
             for i, (original_image, editing_request_page) in enumerate(
                 zip(
                     original_images,
@@ -108,7 +108,7 @@ class ImageEditorAgent(Agent):
 
                 future = executor.submit(
                     self.base_image_editor.edit_image,
-                    pil_image,
+                    pil_image.resize((512, 512)),
                     parsed_request,
                     "512x512",
                 )
@@ -140,7 +140,7 @@ class ImageEditorAgent(Agent):
 
     def post_core(self, data: dict) -> dict:
         super().post_core(data)
-        last_message = data.get("messages", [])[-1].content
+        last_message = extract_text(data.get("messages", [])[-1])
         editing_requests = BookParser().parse(last_message)
 
         tasks = self.generate_images(data, editing_requests)

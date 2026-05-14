@@ -1,6 +1,6 @@
 from langchain.messages import HumanMessage
 
-from shared_reading_mas.agents.core.base_agent import Agent
+from shared_reading_mas.agents.core.base_agent import Agent, extract_text
 from shared_reading_mas.agents.core.base_lm_config import LMConfiguration
 from shared_reading_mas.domain.services.book_renderer import BookMarkdownRenderer
 from shared_reading_mas.domain.services.evaluation_parser import EvaluationParser
@@ -39,7 +39,7 @@ class EditionCriticAgent(Agent):
     def post_core(self, data: dict) -> dict:
         super().post_core(data)
 
-        last_message = data["messages"][-1].content
+        last_message = extract_text(data["messages"][-1])
 
         return_dict = {}
 

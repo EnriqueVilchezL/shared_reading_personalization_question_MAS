@@ -1,3 +1,4 @@
+import os
 from abc import ABC
 from typing import override
 
@@ -74,8 +75,44 @@ def get_llm(lm_config: LMConfiguration):
             timeout=60,
         )
 
+    elif lm_config.base_provider == "vertex":
+        model = ChatGoogleGenerativeAI(
+            model=lm_config.base_model,
+            temperature=lm_config.temperature,
+            project=os.environ.get("GOOGLE_PROJECT_ID"),
+            max_retries=3,
+            timeout=60,
+        )
 
     return model
+
+def extract_text(message):
+    if message is None:
+        return ""
+
+    content = getattr(message, "content", None)
+
+    if content is None:
+        return ""
+
+    # string case
+    if isinstance(content, str):
+        return content.strip()
+
+    # Google / structured case
+    if isinstance(content, list):
+        parts = []
+        for c in content:
+            if isinstance(c, dict):
+                if c.get("type") == "text":
+                    parts.append(c.get("text", ""))
+        return "".join(parts).strip()
+
+    return str(content).strip()
+
+def is_invalid_response(message) -> bool:
+    text = extract_text(message)
+    return text is None or text.strip() == ""
 
 class Agent(ABC):
     name: str
@@ -156,6 +193,22 @@ class Agent(ABC):
         """
         return {}
 
+    async def agent(self, data: dict) -> dict:
+        model = self.core()
+
+        last_message = None
+
+        for attempt in range(self.lm_config.max_retries):
+            result = await model.ainvoke(data)
+
+            last_message = result['messages'][-1]
+
+            #print(f"Attempt {attempt + 1}: Received message: {extract_text(last_message)}")
+            if not is_invalid_response(result['messages'][-1]):
+                return result
+
+        return last_message
+
     def apply_permissions(self, data: dict) -> dict:
         """
         Applies the role permissions to the data.
@@ -232,7 +285,7 @@ class Agent(ABC):
         )
         graph.add_node(self.name + "_pre", self.pre_core)
         graph.add_node(self.name + "_permissions", self.apply_permissions)
-        graph.add_node(self.name + "_agent", self.core())
+        graph.add_node(self.name + "_agent", self.agent)
         graph.add_node(self.name + "_post", self.post_core)
         graph.add_edge(self.name + "_pre", self.name + "_permissions")
         graph.add_edge(self.name + "_permissions", self.name + "_agent")

@@ -19,6 +19,8 @@ dependencies = [
     "openai>=2.8.1",
     "pandas>=3.0.0",
     "psutil>=7.2.2",
+    "langchain-google-vertexai>=3.2.3",
+    "vertexai>=1.43.0",
 ]
 
 [project.optional-dependencies]

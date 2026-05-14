@@ -2,7 +2,7 @@ import copy
 
 from langchain.messages import HumanMessage
 
-from shared_reading_mas.agents.core.base_agent import Agent
+from shared_reading_mas.agents.core.base_agent import Agent, extract_text
 from shared_reading_mas.agents.core.base_lm_config import LMConfiguration
 from shared_reading_mas.agents.personalization.information import Information
 from shared_reading_mas.domain.book_aggregate.book import Book
@@ -39,7 +39,7 @@ class QuestionerAgent(Agent):
 
     def pre_core(self, data: dict) -> dict:
         super().pre_core(data)
-        last_message = data.get("messages", [])[-1].content
+        last_message = extract_text(data.get("messages", [])[-1])
         renderer = BookMarkdownRenderer()
 
         original_book = data.get("original_book")
@@ -74,7 +74,7 @@ class QuestionerAgent(Agent):
     def post_core(self, data: dict) -> dict:
         super().post_core(data)
 
-        last_message = data["messages"][-1].content
+        last_message = extract_text(data["messages"][-1])
 
         parser = BookParser()
         book = parser.parse(last_message)
@@ -204,7 +204,7 @@ class QuestionerEditorAgent(Agent):
 
     def post_core(self, data: dict) -> dict:
         super().post_core(data)
-        last_message = data.get("messages", [])[-1].content
+        last_message = extract_text(data.get("messages", [])[-1])
         book = BookParser().parse(last_message)
 
         modified_book = copy.deepcopy(data["original_book"])

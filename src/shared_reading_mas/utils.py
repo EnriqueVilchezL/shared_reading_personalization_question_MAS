@@ -60,3 +60,29 @@ def load_json_file(path: str):
     with open(path, "r", encoding="utf-8") as file:
         return json.load(file)
 
+def normalize_llm_output(response):
+    """
+    Converts any LangChain LLM response into plain text.
+    Works across OpenAI, OpenRouter, Gemini, Vertex, etc.
+    """
+
+    content = response
+
+    # Case 1: already a string
+    if isinstance(content, str):
+        return content
+
+    # Case 2: list of parts (Google style)
+    if isinstance(content, list):
+        text_parts = []
+
+        for part in content:
+            if isinstance(part, dict):
+                if part.get("type") == "text":
+                    text_parts.append(part.get("text", ""))
+            elif hasattr(part, "text"):
+                text_parts.append(part.text)
+
+        return "".join(text_parts)
+
+    return str(content)

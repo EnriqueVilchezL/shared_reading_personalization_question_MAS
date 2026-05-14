@@ -41,3 +41,8 @@ class LMConfiguration(BaseModel):
         description="Additional parameters to pass to the language model provider's API."
     )
 
+    max_retries: int = Field(
+        default=10,
+        description="The maximum number of retries for API calls to the language model provider."
+    )
+

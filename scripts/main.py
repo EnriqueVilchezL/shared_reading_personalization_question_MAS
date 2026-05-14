@@ -22,7 +22,7 @@ def main():
         help="The path to the MD file with the preferences",
         required=True,
     )
-    parser.add_argument("--output_path", help="The output path", default="output.md")
+    parser.add_argument("--output_path", help="The output path", default="output")
     parser.add_argument(
         "--pipelines",
         help="The pipelines to run",
